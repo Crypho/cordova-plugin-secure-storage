@@ -7,26 +7,32 @@ var _checkCallbacks = function (success, error) {
 
     if (typeof error != "function") {
         console.log("SecureStorage failure: error callback parameter must be a function");
-        return;
+        return false;
     }
 
+    return true;
 };
 
-var SecureStorage = {
+var SecureStorage = function (service) {
+    this.service = service;
+    return this;
+};
+
+SecureStorage.prototype = {
 
     get: function (success, error, key) {
         if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "remove", [key]);
+            cordova.exec(success, error, "SecureStorage", "get", [key, this.service]);
     },
 
     set: function (success, error, key, value) {
         if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "remove", [key, value]);
+            cordova.exec(success, error, "SecureStorage", "set", [key, value, this.service]);
     },
 
     remove: function(success, error, key) {
         if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "remove", [key]);
+            cordova.exec(success, error, "SecureStorage", "remove", [key, this.service]);
     }
 };
 
