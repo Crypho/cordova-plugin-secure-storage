@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.crypho.plugins.securestorage"
+    version="1.0.0">
+
+    <name>SecureStorage</name>
+    <author>Crypho AS</author>
+
+    <description>
+        Secure encrypted storage for cordova apps in iOS and Android.
+    </description>
+
+    <license>MIT</license>
+
+    <keywords>scrypt, encryption</keywords>
+
+    <js-module src="www/securestorage.js" name="SecureStorage">
+        <clobbers target="SecureStorage" />
+    </js-module>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SecureStorage">
+                <param name="ios-package" value="SecureStorage"/>
+            </feature>
+        </config-file>
+        <source-file src="src/ios/SecureStorage.m" />
+        <header-file src="src/ios/SecureStorage.h" />
+    </platform>
+
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SecureStorage" >
+                <param name="android-package" value="com.crypho.plugins.SecureStorage"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-sdk   android:minSdkVersion="19" android:targetSdkVersion="19"/>
+        </config-file>
+    </platform>
+</plugin>
