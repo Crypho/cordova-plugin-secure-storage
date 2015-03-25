@@ -22,17 +22,17 @@ SecureStorage.prototype = {
 
     get: function (success, error, key) {
         if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "get", [key, this.service]);
+            cordova.exec(success, error, "SecureStorage", "get", [this.service, key]);
     },
 
     set: function (success, error, key, value) {
         if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "set", [key, value, this.service]);
+            cordova.exec(success, error, "SecureStorage", "set", [this.service, key, value]);
     },
 
     remove: function(success, error, key) {
         if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "remove", [key, this.service]);
+            cordova.exec(success, error, "SecureStorage", "remove", [this.service, key]);
     }
 };
 
