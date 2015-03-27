@@ -1,3 +1,5 @@
+var sjcl = cordova.require('com.crypho.plugins.securestorage.sjcl');
+
 var _checkCallbacks = function (success, error) {
 
     if (typeof success != "function")  {
@@ -13,12 +15,7 @@ var _checkCallbacks = function (success, error) {
     return true;
 };
 
-var SecureStorage = function (service) {
-    this.service = service;
-    return this;
-};
-
-SecureStorage.prototype = {
+var ios = {
 
     get: function (success, error, key) {
         if (_checkCallbacks(success, error))
@@ -35,6 +32,29 @@ SecureStorage.prototype = {
             cordova.exec(success, error, "SecureStorage", "remove", [this.service, key]);
     }
 };
+
+var android = {
+
+};
+
+var SecureStorage = function (service) {
+    this.service = service;
+    return this;
+};
+
+switch(cordova.platformId) {
+
+    case 'ios':
+        SecureStorage.prototype = ios;
+        break;
+
+    case 'android':
+        SecureStorage.prototype = android;
+        break;
+
+    default:
+        throw "Unsupported platform for SecureStorage";
+}
 
 if (!cordova.plugins) {
     cordova.plugins = {};
