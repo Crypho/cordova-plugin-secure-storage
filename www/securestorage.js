@@ -101,8 +101,6 @@ SecureStorageAndroid.prototype = {
     },
 
     remove: function(success, error, key) {
-        if (_checkCallbacks(success, error))
-            cordova.exec(success, error, "SecureStorage", "remove", [this.service, key]);
         localStorage.removeItem('_SS_' + key);
         success(key);
     }
