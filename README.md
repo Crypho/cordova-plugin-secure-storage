@@ -4,8 +4,6 @@
 
 This plugin is for use with [Cordova](http://incubator.apache.org/cordova/) and allows your application to securely store secrets on iOS & Android phones.
 
-On iOS secrets are stored directly in the KeyChain.
-
 ### Contents
 
 - [Installation](#installation)
@@ -38,8 +36,10 @@ cordova plugin add https://github.com/Crypho/com.crypho.plugins.securestorage.gi
 ####Create a namespaced storage.
 
 ```js
-
-var ss = new cordova.plugins.SecureStorage('my_app');
+var ss = new cordova.plugins.SecureStorage(
+    function () { console.log('Success')},
+    function (error) { console.log('Error ' + error); },
+    'my_app');
 
 ```
 #### Set a key/value in the storage.
@@ -70,6 +70,22 @@ ss.remove(
     function (error) { console.log('Error, ' + error); },
     'mykey');
 ```
+
+##Platform details
+
+#### iOS
+On iOS secrets are stored directly in the KeyChain.
+
+#### Android
+On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureStorage`` API is implemented as follows:
+
+* A random 256-bit AES key is generated in the browser.
+* The AES key encrypts the value.
+* The AES key is encrypted with a device-generated RSA (RSA/ECB/PKCS1Padding) from the Android KeyStore.
+* The combination of the encrypted AES key and value are stored in ``localStorage``.
+
+The inverse process is followed on ``get``.
+
 
 ##<a name="license"></a> LICENSE
 
