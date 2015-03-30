@@ -73,7 +73,7 @@ SecureStorageAndroid.prototype = {
                         error(e);
                     }
                 },
-                error, "SecureStorage", "decrypt", [AESKey]);
+                error, "SecureStorage", "decrypt_rsa", [AESKey]);
         } catch (e) {
             error(e);
         }
@@ -97,7 +97,7 @@ SecureStorageAndroid.prototype = {
             function (err) {
                 error(err);
             },
-            "SecureStorage", "encrypt", [sjcl.codec.base64.fromBits(AESKey)]);
+            "SecureStorage", "encrypt_rsa", [sjcl.codec.base64.fromBits(AESKey)]);
     },
 
     remove: function(success, error, key) {
