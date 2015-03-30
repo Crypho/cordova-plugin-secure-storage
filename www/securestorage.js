@@ -55,7 +55,29 @@ SecureStorageAndroid.prototype = {
     get: function (success, error, key) {
         if (!_checkCallbacks(success, error))
             return;
-            // cordova.exec(success, error, "SecureStorage", "get", [this.service, key]);
+        var payload = localStorage.getItem('_SS_' + key);
+        if (!payload) {
+            error('Key "' + key + '"not found.');
+            return;
+        }
+        try {
+            payload = JSON.parse(payload);
+            var AESKey = payload.key;
+            cordova.exec(
+                function (AESKey) {
+                    try {
+                        AESKey = sjcl.codec.base64.toBits(AESKey);
+                        var value = sjcl.decrypt(AESKey, payload.value);
+                        success(value);
+                    } catch (e) {
+                        error(e);
+                    }
+                },
+                error, "SecureStorage", "decrypt", [AESKey]);
+        } catch (e) {
+            error(e);
+        }
+
     },
 
     set: function (success, error, key, value) {
@@ -81,6 +103,8 @@ SecureStorageAndroid.prototype = {
     remove: function(success, error, key) {
         if (_checkCallbacks(success, error))
             cordova.exec(success, error, "SecureStorage", "remove", [this.service, key]);
+        localStorage.removeItem('_SS_' + key);
+        success(key);
     }
 };
 
