@@ -1,4 +1,10 @@
 var sjcl = cordova.require('com.crypho.plugins.securestorage.sjcl');
+var _AES_PARAM = {
+    ks: 256,
+    ts: 128,
+    mode: 'ccm',
+    cipher: 'aes'
+ };
 
 var _checkCallbacks = function (success, error) {
 
@@ -15,7 +21,13 @@ var _checkCallbacks = function (success, error) {
     return true;
 };
 
-var ios = {
+var SecureStorageiOS = function (success, error, service) {
+    this.service = service;
+    success();
+    return this;
+};
+
+SecureStorageiOS.prototype = {
 
     get: function (success, error, key) {
         if (_checkCallbacks(success, error))
@@ -33,23 +45,55 @@ var ios = {
     }
 };
 
-var android = {
-
-};
-
-var SecureStorage = function (service) {
+var SecureStorageAndroid = function (success, error, service) {
     this.service = service;
+    cordova.exec(success, error, "SecureStorage", "init", [this.service]);
     return this;
 };
+
+SecureStorageAndroid.prototype = {
+    get: function (success, error, key) {
+        if (!_checkCallbacks(success, error))
+            return;
+            // cordova.exec(success, error, "SecureStorage", "get", [this.service, key]);
+    },
+
+    set: function (success, error, key, value) {
+        if (!_checkCallbacks(success, error))
+            return;
+
+        var AESKey = sjcl.random.randomWords(8);
+        _AES_PARAM.adata = this.service;
+        value = sjcl.encrypt(AESKey, value, _AES_PARAM);
+
+        // Ecrypt the AES key
+        cordova.exec(
+            function (encKey) {
+                localStorage.setItem('_SS_' + key, JSON.stringify({key: encKey, value: value}));
+                success(key);
+            },
+            function (err) {
+                error(err);
+            },
+            "SecureStorage", "encrypt", [sjcl.codec.base64.fromBits(AESKey)]);
+    },
+
+    remove: function(success, error, key) {
+        if (_checkCallbacks(success, error))
+            cordova.exec(success, error, "SecureStorage", "remove", [this.service, key]);
+    }
+};
+
+var SecureStorage;
 
 switch(cordova.platformId) {
 
     case 'ios':
-        SecureStorage.prototype = ios;
+        SecureStorage = SecureStorageiOS;
         break;
 
     case 'android':
-        SecureStorage.prototype = android;
+        SecureStorage = SecureStorageAndroid;
         break;
 
     default:
