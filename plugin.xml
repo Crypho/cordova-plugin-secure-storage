@@ -19,6 +19,10 @@
         <clobbers target="SecureStorage" />
     </js-module>
 
+    <js-module src="www/sjcl.js" name="sjcl">
+        <runs />
+    </js-module>
+
     <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
@@ -51,5 +55,8 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-sdk   android:minSdkVersion="19" android:targetSdkVersion="19"/>
         </config-file>
+
+        <source-file src="src/android/SecureStorage.java" target-dir="src/com/crypho/plugins/" />
+
     </platform>
 </plugin>
