@@ -19,8 +19,7 @@
         <clobbers target="SecureStorage" />
     </js-module>
 
-    <js-module src="www/sjcl.js" name="sjcl">
-        <runs />
+    <js-module src="www/sjcl_ss.js" name="sjcl_ss">
     </js-module>
 
     <engines>

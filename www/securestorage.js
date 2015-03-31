@@ -1,4 +1,4 @@
-var sjcl = cordova.require('com.crypho.plugins.securestorage.sjcl');
+// var sjcl_ss = cordova.require('com.crypho.plugins.securestorage.sjcl_ss');
 var _AES_PARAM = {
     ks: 256,
     ts: 128,
@@ -66,8 +66,8 @@ SecureStorageAndroid.prototype = {
             cordova.exec(
                 function (AESKey) {
                     try {
-                        AESKey = sjcl.codec.base64.toBits(AESKey);
-                        var value = sjcl.decrypt(AESKey, payload.value);
+                        AESKey = sjcl_ss.codec.base64.toBits(AESKey);
+                        var value = sjcl_ss.decrypt(AESKey, payload.value);
                         success(value);
                     } catch (e) {
                         error(e);
@@ -84,9 +84,9 @@ SecureStorageAndroid.prototype = {
         if (!_checkCallbacks(success, error))
             return;
 
-        var AESKey = sjcl.random.randomWords(8);
+        var AESKey = sjcl_ss.random.randomWords(8);
         _AES_PARAM.adata = this.service;
-        value = sjcl.encrypt(AESKey, value, _AES_PARAM);
+        value = sjcl_ss.encrypt(AESKey, value, _AES_PARAM);
 
         // Ecrypt the AES key
         cordova.exec(
@@ -97,7 +97,7 @@ SecureStorageAndroid.prototype = {
             function (err) {
                 error(err);
             },
-            "SecureStorage", "encrypt", [sjcl.codec.base64.fromBits(AESKey)]);
+            "SecureStorage", "encrypt", [sjcl_ss.codec.base64.fromBits(AESKey)]);
     },
 
     remove: function(success, error, key) {
