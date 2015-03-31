@@ -23,7 +23,7 @@ var _checkCallbacks = function (success, error) {
 
 var SecureStorageiOS = function (success, error, service) {
     this.service = service;
-    success();
+    setTimeout(success, 0);
     return this;
 };
 
