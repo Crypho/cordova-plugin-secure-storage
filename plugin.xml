@@ -8,12 +8,12 @@
     <author>Crypho AS</author>
 
     <description>
-        Secure encrypted storage for cordova apps in iOS and Android.
+        Secure, encrypted storage for cordova apps in iOS and Android.
     </description>
 
     <license>MIT</license>
 
-    <keywords>scrypt, encryption</keywords>
+    <keywords>keychain, encryption, security</keywords>
 
     <js-module src="www/securestorage.js" name="SecureStorage">
         <clobbers target="SecureStorage" />

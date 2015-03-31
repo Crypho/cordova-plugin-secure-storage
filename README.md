@@ -74,7 +74,7 @@ ss.remove(
 ##Platform details
 
 #### iOS
-On iOS secrets are stored directly in the KeyChain.
+On iOS secrets are stored directly in the KeyChain through the [SSKeychain](https://github.com/soffes/sskeychain) library.
 
 #### Android
 On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureStorage`` API is implemented as follows:
@@ -84,7 +84,7 @@ On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureS
 * The AES key is encrypted with a device-generated RSA (RSA/ECB/PKCS1Padding) from the Android KeyStore.
 * The combination of the encrypted AES key and value are stored in ``localStorage``.
 
-The inverse process is followed on ``get``.
+The inverse process is followed on ``get``. AES is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
 
 
 ##<a name="license"></a> LICENSE
