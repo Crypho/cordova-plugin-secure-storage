@@ -86,6 +86,8 @@ On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureS
 
 The inverse process is followed on ``get``. AES is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
 
+#### Browser
+The browser platform is supported as a mock only. Key/values are stored unencrypted in localStorage.
 
 ##<a name="license"></a> LICENSE
 
