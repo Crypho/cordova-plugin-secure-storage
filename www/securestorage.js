@@ -52,6 +52,7 @@ var SecureStorageAndroid = function (success, error, service) {
 };
 
 SecureStorageAndroid.prototype = {
+
     get: function (success, error, key) {
         if (!_checkCallbacks(success, error))
             return;
@@ -106,6 +107,42 @@ SecureStorageAndroid.prototype = {
     }
 };
 
+
+var SecureStorageBrowser = function (success, error, service) {
+    this.service = service;
+    setTimeout(success, 0);
+    return this;
+};
+
+SecureStorageBrowser.prototype = {
+
+    get: function (success, error, key) {
+        if (!_checkCallbacks(success, error))
+            return;
+        var value = localStorage.getItem('_SS_' + key);
+        if (!value) {
+            error('Key "' + key + '"not found.');
+        } else {
+            success(value);
+        }
+    },
+
+    set: function (success, error, key, value) {
+        if (!_checkCallbacks(success, error))
+            return;
+
+        localStorage.setItem('_SS_' + key, value);
+        success(key);
+    },
+
+    remove: function(success, error, key) {
+        localStorage.removeItem('_SS_' + key);
+        success(key);
+    }
+};
+
+
+
 var SecureStorage;
 
 switch(cordova.platformId) {
@@ -118,8 +155,12 @@ switch(cordova.platformId) {
         SecureStorage = SecureStorageAndroid;
         break;
 
+    case 'browser':
+        SecureStorage = SecureStorageBrowser;
+        break;
+
     default:
-        throw "Unsupported platform for SecureStorage";
+        SecureStorage = null;
 }
 
 if (!cordova.plugins) {
