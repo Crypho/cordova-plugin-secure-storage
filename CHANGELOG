@@ -1,6 +1,15 @@
 Changelog
 =========
 
-1.0.0 - Unreleased
+
+1.1.0 - 2015-04-01
 ------------------
 
+- Support the browser platform.
+  [ggozad]
+
+1.0.0 - 2015-03-30
+------------------
+
+- Initial release.
+  [ggozad]
