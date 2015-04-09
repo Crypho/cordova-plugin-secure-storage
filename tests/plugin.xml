@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.crypho.plugins.securestorage.tests"
+    version="0.0.1-dev">
+
+    <name>SecureStorage Tests</name>
+    <author>Crypho AS</author>
+
+    <description>
+        Test for com.crypho.plugins.securestorage
+    </description>
+
+    <license>MIT</license>
+
+    <keywords>security, encryption, tests</keywords>
+
+    <js-module src="tests.js" name="tests">
+    </js-module>
+
+</plugin>
