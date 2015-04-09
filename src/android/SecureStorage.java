@@ -18,23 +18,23 @@ public class SecureStorage extends CordovaPlugin {
 
     private String ALIAS = null;
 
-    private CallbackContext inιtializationContext;
-    private boolean inιtializing = false;
+    private CallbackContext inιtContext;
 
     @Override
     public void onResume(boolean multitasking) {
-        if (inιtializing) {
-            inιtializing = false;
+        if (inιtContext != null) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     try {
                         if (!RSA.isEntryAvailable(ALIAS)) {
                             RSA.createKeyPair(getContext(), ALIAS);
                         }
-                        inιtializationContext.success();
+                        inιtContext.success();
                     } catch (Exception e) {
                         Log.e(TAG, "Init failed :", e);
-                        inιtializationContext.error(e.getMessage());
+                        inιtContext.error(e.getMessage());
+                    } finally {
+                        inιtContext = null;
                     }
                 }
             });
@@ -44,15 +44,13 @@ public class SecureStorage extends CordovaPlugin {
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if ("init".equals(action)) {
-            inιtializing = true;
-            inιtializationContext = callbackContext;
             ALIAS = getContext().getPackageName() + "." + args.getString(0);
-            cordova.getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    Intent intent = new Intent("com.android.credentials.UNLOCK");
-                    startActivity(intent);
-                }
-            });
+            if (!RSA.isEntryAvailable(ALIAS)) {
+                inιtContext = callbackContext;
+                unlockCredentials();
+            } else {
+                callbackContext.success();
+            }
             return true;
         }
         if ("encrypt".equals(action)) {
@@ -71,7 +69,7 @@ public class SecureStorage extends CordovaPlugin {
             return true;
         }
         if ("decrypt".equals(action)) {
-            final byte[] decryptMe = args.getArrayBuffer(0);
+            final byte[] decryptMe = args.getArrayBuffer(0);// getArrayBuffer does base64 decoding
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     try {
@@ -86,6 +84,15 @@ public class SecureStorage extends CordovaPlugin {
             return true;
         }
         return false;
+    }
+
+    private void unlockCredentials() {
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                Intent intent = new Intent("com.android.credentials.UNLOCK");
+                startActivity(intent);
+            }
+        });
     }
 
     private Context getContext(){
