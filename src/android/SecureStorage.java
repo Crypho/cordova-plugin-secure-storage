@@ -18,23 +18,23 @@ public class SecureStorage extends CordovaPlugin {
 
     private String ALIAS = null;
 
-    private CallbackContext inιtContext;
+    private CallbackContext initContext;
 
     @Override
     public void onResume(boolean multitasking) {
-        if (inιtContext != null) {
+        if (initContext != null) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     try {
                         if (!RSA.isEntryAvailable(ALIAS)) {
                             RSA.createKeyPair(getContext(), ALIAS);
                         }
-                        inιtContext.success();
+                        initContext.success();
                     } catch (Exception e) {
                         Log.e(TAG, "Init failed :", e);
-                        inιtContext.error(e.getMessage());
+                        initContext.error(e.getMessage());
                     } finally {
-                        inιtContext = null;
+                        initContext = null;
                     }
                 }
             });
@@ -46,7 +46,7 @@ public class SecureStorage extends CordovaPlugin {
         if ("init".equals(action)) {
             ALIAS = getContext().getPackageName() + "." + args.getString(0);
             if (!RSA.isEntryAvailable(ALIAS)) {
-                inιtContext = callbackContext;
+                initContext = callbackContext;
                 unlockCredentials();
             } else {
                 callbackContext.success();
