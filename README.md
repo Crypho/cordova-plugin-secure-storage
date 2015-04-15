@@ -57,7 +57,7 @@ where ``key`` and ``value`` are both strings.
 
 ```js
 ss.get(
-    function (value) { console.log('Success, got ' + value); },
+    function (key) { console.log('Success, got ' + value); },
     function (error) { console.log('Error ' + error); },
     'mykey');
 ```
