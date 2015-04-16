@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1.2 - 2015-04-16
+
+- Fix Android key creation conflict.
+  [demetris-manikas]
+
 1.1.1 - 2015-04-13
 ------------------
 
