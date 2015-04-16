@@ -16,25 +16,28 @@ import javax.crypto.Cipher;
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
-    private String ALIAS = null;
+    private String ALIAS;
 
-    private CallbackContext inιtContext;
+    private volatile CallbackContext initContext;
+    private volatile boolean initContextRunning = false;
 
     @Override
     public void onResume(boolean multitasking) {
-        if (inιtContext != null) {
+        if (initContext != null && !initContextRunning) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
+                    initContextRunning = true;
                     try {
                         if (!RSA.isEntryAvailable(ALIAS)) {
                             RSA.createKeyPair(getContext(), ALIAS);
                         }
-                        inιtContext.success();
+                        initContext.success();
                     } catch (Exception e) {
                         Log.e(TAG, "Init failed :", e);
-                        inιtContext.error(e.getMessage());
+                        initContext.error(e.getMessage());
                     } finally {
-                        inιtContext = null;
+                        initContext = null;
+                        initContextRunning = false;
                     }
                 }
             });
@@ -46,7 +49,7 @@ public class SecureStorage extends CordovaPlugin {
         if ("init".equals(action)) {
             ALIAS = getContext().getPackageName() + "." + args.getString(0);
             if (!RSA.isEntryAvailable(ALIAS)) {
-                inιtContext = callbackContext;
+                initContext = callbackContext;
                 unlockCredentials();
             } else {
                 callbackContext.success();
