@@ -6,6 +6,8 @@ import android.util.Base64;
 import android.content.Context;
 import android.content.Intent;
 
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
@@ -16,10 +18,20 @@ import javax.crypto.Cipher;
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
-    private String ALIAS;
+    private static final String PREFERENCE_RSA_KEY_SIZE = "RSAKeySize";
+    private static final int DEFAULT_RSA_KEY_SIZE =  2048;
 
+    private String ALIAS;
+    private int RSA_keySize;
     private volatile CallbackContext initContext;
     private volatile boolean initContextRunning = false;
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        RSA_keySize  = preferences.getInteger(PREFERENCE_RSA_KEY_SIZE, DEFAULT_RSA_KEY_SIZE);
+        Log.v(TAG, "RSA key size : " + RSA_keySize);
+    }
 
     @Override
     public void onResume(boolean multitasking) {
@@ -29,7 +41,7 @@ public class SecureStorage extends CordovaPlugin {
                     initContextRunning = true;
                     try {
                         if (!RSA.isEntryAvailable(ALIAS)) {
-                            RSA.createKeyPair(getContext(), ALIAS);
+                            RSA.createKeyPair(getContext(), ALIAS, RSA_keySize);
                         }
                         initContext.success();
                     } catch (Exception e) {
