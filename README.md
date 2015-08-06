@@ -1,3 +1,8 @@
+# Forking Note
+- remove the hard coded <uses-sdk> for android
+- convert to the new cordova naming scheme for plugins
+- move to use npm
+
 # SecureStorage plugin for iOS & Android
 
 ## Introduction
@@ -22,13 +27,13 @@ The plugin can be installed via the Cordova command line interface:
 * Run the command:
 
 ```sh
-cordova plugin add com.crypho.plugins.securestorage
+cordova plugin add cordova-plugin-secure-storage
 ```
 
 or if you want to be running the development version,
 
 ```sh
-cordova plugin add https://github.com/Crypho/com.crypho.plugins.securestorage.git
+cordova plugin add https://github.com/LikeMindNetworks/cordova-plugin-secure-storage.git
 ```
 
 ##<a name="plugin_api"></a> Plugin API
