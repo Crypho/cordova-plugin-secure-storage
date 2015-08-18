@@ -18,7 +18,7 @@ NSString *const kSSKeychainLastModifiedKey = @"mdat";
 NSString *const kSSKeychainWhereKey = @"svce";
 
 #if __IPHONE_4_0 && TARGET_OS_IPHONE
-	static CFTypeRef SSKeychainAccessibilityType = NULL;
+	static CFTypeRef SSKeychainAccessibilityType = kSecAttrAccessibleAfterFirstUnlock;
 #endif
 
 @implementation SSKeychain
