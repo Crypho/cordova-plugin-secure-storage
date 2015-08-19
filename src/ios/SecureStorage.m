@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
 #import "SecureStorage.h"
 #import <Cordova/CDV.h>
 #import "SSKeychain.h"
@@ -35,7 +36,10 @@
 
     self.callbackId = command.callbackId;
 
+    [SSKeychain setAccessibilityType: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    
     SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
+    
     query.service = service;
     query.account = key;
     query.password = value;
