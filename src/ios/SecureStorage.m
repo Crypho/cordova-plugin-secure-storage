@@ -14,13 +14,13 @@
     NSString *service = [command argumentAtIndex:0];
     NSString *key = [command argumentAtIndex:1];
     NSError *error;
-    
+
     self.callbackId = command.callbackId;
-    
+
     SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
     query.service = service;
     query.account = key;
-    
+
     if ([query fetch:&error]) {
         [self successWithMessage: query.password];
     } else {
@@ -34,9 +34,9 @@
     NSString *key = [command argumentAtIndex:1];
     NSString *value = [command argumentAtIndex:2];
     NSError *error;
-    
+
     self.callbackId = command.callbackId;
-    
+
     if (self.keychainAccesssibilityMapping == nil) {
         self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
                                               (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
@@ -48,20 +48,20 @@
                                               (__bridge id)(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly), @"whenpasscodesetthisdeviceonly",
                                               nil];
     }
-    
+
     NSString* keychainAccessibility = [[self.commandDelegate.settings objectForKey:[@"KeychainAccessibility" lowercaseString]] lowercaseString];
-    
+
     if ([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)] != nil) {
         CFTypeRef accessability = (__bridge CFTypeRef)([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
         [SSKeychain setAccessibilityType:accessability];
     }
-    
+
     SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
-    
+
     query.service = service;
     query.account = key;
     query.password = value;
-    
+
     if ([query save:&error]) {
         [self successWithMessage: key];
     } else {
@@ -74,13 +74,13 @@
     NSString *service = [command argumentAtIndex:0];
     NSString *key = [command argumentAtIndex:1];
     NSError *error;
-    
+
     self.callbackId = command.callbackId;
-    
+
     SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
     query.service = service;
     query.account = key;
-    
+
     if ([query deleteItem:&error]) {
         [self successWithMessage: key];
     } else {
@@ -101,7 +101,7 @@
 {
     NSString        *errorMessage = (error) ? [NSString stringWithFormat:@"%@ - %@", message, [error localizedDescription]] : message;
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
-    
+
     [self.commandDelegate sendPluginResult:commandResult callbackId:self.callbackId];
 }
 
