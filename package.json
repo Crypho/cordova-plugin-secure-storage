@@ -1,0 +1,32 @@
+{
+  "name": "cordova-plugin-secure-storage",
+  "version": "1.1.5",
+  "description": "",
+  "cordova": {
+    "id": "cordova-plugin-secure-storage",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "cordova"
+  ],
+  "main": "www/securestorage.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LikeMindNetworks/cordova-plugin-secure-storage.git"
+  },
+  "author": "LikeMindNetworks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LikeMindNetworks/cordova-plugin-secure-storage/issues"
+  },
+  "homepage": "https://github.com/LikeMindNetworks/cordova-plugin-secure-storage#readme"
+}

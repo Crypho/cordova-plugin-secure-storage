@@ -1,4 +1,4 @@
-var sjcl_ss = cordova.require('com.crypho.plugins.securestorage.sjcl_ss');
+var sjcl_ss = cordova.require('cordova-plugin-secure-storage.sjcl_ss');
 var _AES_PARAM = {
     ks: 256,
     ts: 128,

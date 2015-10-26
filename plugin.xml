@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="com.crypho.plugins.securestorage"
-    version="1.1.2">
+    id="cordova-plugin-secure-storage"
+    version="1.1.5">
 
     <name>SecureStorage</name>
     <author>Crypho AS</author>
@@ -50,10 +50,6 @@
             <feature name="SecureStorage" >
                 <param name="android-package" value="com.crypho.plugins.SecureStorage"/>
             </feature>
-        </config-file>
-
-        <config-file target="AndroidManifest.xml" parent="/manifest">
-            <uses-sdk   android:minSdkVersion="19" android:targetSdkVersion="19"/>
         </config-file>
 
         <source-file src="src/android/SecureStorage.java" target-dir="src/com/crypho/plugins/" />
