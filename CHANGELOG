@@ -1,7 +1,14 @@
 Changelog
 =========
 
+1.2.0 -
+------------------
+
+- Update to use npm.
+  [ggozad]
+
 1.1.2 - 2015-04-16
+------------------
 
 - Fix Android key creation conflict.
   [demetris-manikas]
