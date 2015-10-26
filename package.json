@@ -10,23 +10,23 @@
     ]
   },
   "keywords": [
-    "cordova"
+    "cordova", "security", "encryption"
   ],
   "main": "www/securestorage.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "src/tests/tests.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LikeMindNetworks/cordova-plugin-secure-storage.git"
+    "url": "git+https://github.com/crypho/cordova-plugin-secure-storage.git"
   },
-  "author": "LikeMindNetworks",
+  "author": "crypho",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/LikeMindNetworks/cordova-plugin-secure-storage/issues"
+    "url": "https://github.com/crypho/cordova-plugin-secure-storage/issues"
   },
-  "homepage": "https://github.com/LikeMindNetworks/cordova-plugin-secure-storage#readme"
+  "homepage": "https://github.com/crypho/cordova-plugin-secure-storage#readme"
 }
