@@ -1,6 +1,6 @@
 exports.defineAutoTests = function() {
 
-    describe('com.crypho.plugins.securestorage', function () {
+    describe('cordova-plugin-secure-storage', function () {
 
         var ss, successHandler, errorHandler, handlers;
 
