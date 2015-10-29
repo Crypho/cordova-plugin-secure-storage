@@ -52,8 +52,8 @@
     NSString* keychainAccessibility = [[self.commandDelegate.settings objectForKey:[@"KeychainAccessibility" lowercaseString]] lowercaseString];
 
     if ([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)] != nil) {
-        CFTypeRef accessability = (__bridge CFTypeRef)([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
-        [SSKeychain setAccessibilityType:accessability];
+        CFTypeRef accessibility = (__bridge CFTypeRef)([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
+        [SSKeychain setAccessibilityType:accessibility];
     }
 
     SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
