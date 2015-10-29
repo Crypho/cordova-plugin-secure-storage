@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
 #import "SecureStorage.h"
 #import <Cordova/CDV.h>
 #import "SSKeychain.h"
@@ -6,6 +7,7 @@
 @implementation SecureStorage
 
 @synthesize callbackId;
+@synthesize keychainAccesssibilityMapping;
 
 - (void)get:(CDVInvokedUrlCommand*)command
 {
@@ -35,7 +37,27 @@
 
     self.callbackId = command.callbackId;
 
+    if (self.keychainAccesssibilityMapping == nil) {
+        self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+                                              (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
+                                              (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
+                                              (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
+                                              (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
+                                              (__bridge id)(kSecAttrAccessibleAlways), @"always",
+                                              (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
+                                              (__bridge id)(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly), @"whenpasscodesetthisdeviceonly",
+                                              nil];
+    }
+
+    NSString* keychainAccessibility = [[self.commandDelegate.settings objectForKey:[@"KeychainAccessibility" lowercaseString]] lowercaseString];
+
+    if ([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)] != nil) {
+        CFTypeRef accessibility = (__bridge CFTypeRef)([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
+        [SSKeychain setAccessibilityType:accessibility];
+    }
+
     SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
+
     query.service = service;
     query.account = key;
     query.password = value;
