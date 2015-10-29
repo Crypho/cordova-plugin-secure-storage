@@ -77,7 +77,7 @@ ss.remove(
 On iOS secrets are stored directly in the KeyChain through the [SSKeychain](https://github.com/soffes/sskeychain) library.
 
 ##### Configuration
-You could configure the accessibility of the KeychainItems by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
+It it possible to configure the accessibility of the keychain by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
  * AfterFirstUnlock
  * AfterFirstUnlockThisDeviceOnly
  * WhenUnlocked
@@ -87,6 +87,14 @@ You could configure the accessibility of the KeychainItems by setting the `Keych
  * WhenPasscodeSetThisDeviceOnly
 
 For reference what these settings mean, see [Keychain Item Accessibility Constants](https://developer.apple.com/library/ios/documentation/Security/Reference/keychainservices/#//apple_ref/doc/constant_group/Keychain_Item_Accessibility_Constants).
+
+For example, include in your ``config.xml`` the following:
+
+```xml
+    <platform name="ios">
+        <preference name="KeychainAccessibility" value="WhenUnlocked"/>
+    </platform>
+```
 
 #### Android
 On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureStorage`` API is implemented as follows:
