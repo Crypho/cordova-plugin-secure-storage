@@ -109,6 +109,17 @@ The inverse process is followed on ``get``. AES is provided by the [sjcl](https:
 #### Browser
 The browser platform is supported as a mock only. Key/values are stored unencrypted in localStorage.
 
+## FAQ
+
+* I get the error ``cordova.plugins.SecureStorage is not a function``, what gives?
+
+    You can instantiate the plugin only after the ``deviceready`` event is fired. The plugin is not available before that. Also make sure you use the plugin after its success callback has fired.
+
+* Do my users really need to set a PIN code on their android devices to use the plugin?
+
+    Yes, sorry. Android will not allow the creation of cryptographic keys unless the user has enabled at least PIN locking on the device.
+
+
 ##<a name="license"></a> LICENSE
 
     The MIT License
