@@ -96,13 +96,15 @@ For example, include in your ``config.xml`` the following:
     </platform>
 ```
 
-## iOS 7 Support
+#### iOS 7 Support
 
-iOS 7 is supported without ``WhenPasscodeSetThisDeviceOnly`` option.
-How to test the plugin using iOS7 simulator:
+iOS 7 is supported without ``WhenPasscodeSetThisDeviceOnly`` option. 
+
+How to test the plugin using iOS 7 simulator:
  * Download and install Xcode 6 into a separate folder, e.g. /Application/Xcode 6/
  * Run ``$ xcode-select --switch  <path to Xcode6>/Contents/Developer``
- * Build Cordova app with the plugin and run it in iOS7 simulator
+ * Build Cordova app with the plugin and run it in iOS 7 simulator
+
 
 
 #### Android
