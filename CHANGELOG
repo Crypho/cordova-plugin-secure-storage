@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.2.1 - 2016-01-04
+------------------
+
+- Supporting iOS 7 without 'WhenPasscodeSetThisDeviceOnly' option
+
 2.2.0 - Unreleased
 ------------------
 
