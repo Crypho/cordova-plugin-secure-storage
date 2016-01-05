@@ -84,7 +84,7 @@ It it possible to configure the accessibility of the keychain by setting the `Ke
  * WhenUnlockedThisDeviceOnly
  * Always
  * AlwaysThisDeviceOnly
- * WhenPasscodeSetThisDeviceOnly
+ * WhenPasscodeSetThisDeviceOnly (this option is available only on iOS8 and later)
 
 For reference what these settings mean, see [Keychain Item Accessibility Constants](https://developer.apple.com/library/ios/documentation/Security/Reference/keychainservices/#//apple_ref/doc/constant_group/Keychain_Item_Accessibility_Constants).
 
@@ -95,6 +95,17 @@ For example, include in your ``config.xml`` the following:
         <preference name="KeychainAccessibility" value="WhenUnlocked"/>
     </platform>
 ```
+
+#### iOS 7 Support
+
+iOS 7 is supported without ``WhenPasscodeSetThisDeviceOnly`` option. 
+
+How to test the plugin using iOS 7 simulator:
+ * Download and install Xcode 6 into a separate folder, e.g. /Application/Xcode 6/
+ * Run ``$ xcode-select --switch  <path to Xcode6>/Contents/Developer``
+ * Build Cordova app with the plugin and run it in iOS 7 simulator
+
+
 
 #### Android
 On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureStorage`` API is implemented as follows:
@@ -118,7 +129,6 @@ The browser platform is supported as a mock only. Key/values are stored unencryp
 * Do my users really need to set a PIN code on their android devices to use the plugin?
 
     Yes, sorry. Android will not allow the creation of cryptographic keys unless the user has enabled at least PIN locking on the device.
-
 
 ##<a name="license"></a> LICENSE
 
