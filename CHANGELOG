@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.2.0 - Unreleased
+2.2.0 - 2016-01-05
 ------------------
+
+- Supporting iOS 7 without 'WhenPasscodeSetThisDeviceOnly' option.
+  [embedded-spirit]
 
 
 2.1.0 - 2015-10-29
