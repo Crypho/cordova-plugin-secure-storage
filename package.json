@@ -17,7 +17,11 @@
     "cordova",
     "security",
     "encryption",
-    "storage"
+    "storage",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-browser"
   ],
   "main": "www/securestorage.js",
   "repository": {
