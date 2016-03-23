@@ -58,7 +58,7 @@ SecureStorageAndroid.prototype = {
             return;
         var payload = localStorage.getItem('_SS_' + key);
         if (!payload) {
-            error('Key "' + key + '"not found.');
+            error('Key "' + key + '" not found.');
             return;
         }
         try {
