@@ -42,27 +42,27 @@
 
         if (self.keychainAccesssibilityMapping == nil) {
 
-        if( [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 ){
-              self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
-                                                  (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
-                                                  (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
-                                                  (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
-                                                  (__bridge id)(kSecAttrAccessibleAlways), @"always",
-                                                  (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
-                                                  (__bridge id)(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly), @"whenpasscodesetthisdeviceonly",
-                                                  nil];
-        }
-        else{
-              self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
-                                                  (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
-                                                  (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
-                                                  (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
-                                                  (__bridge id)(kSecAttrAccessibleAlways), @"always",
-                                                  (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
-                                                  nil];
-        }
+            if( [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 ){
+                  self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
+                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
+                                                      (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
+                                                      (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
+                                                      (__bridge id)(kSecAttrAccessibleAlways), @"always",
+                                                      (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
+                                                      (__bridge id)(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly), @"whenpasscodesetthisdeviceonly",
+                                                      nil];
+            }
+            else{
+                  self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
+                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
+                                                      (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
+                                                      (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
+                                                      (__bridge id)(kSecAttrAccessibleAlways), @"always",
+                                                      (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
+                                                      nil];
+            }
         }
 
         NSString* keychainAccessibility = [[self.commandDelegate.settings objectForKey:[@"KeychainAccessibility" lowercaseString]] lowercaseString];
