@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.2 - unreleased
+2.2.2 - 2016-05-10
 ------------------
 
 - Execute iOS commands in separate threads instead of the main thread.
