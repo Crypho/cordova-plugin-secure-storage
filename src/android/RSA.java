@@ -28,7 +28,7 @@ public class RSA {
 		return cipher.doFinal(encrypted);
 	}
 
-	public static void createKeyPair(Context ctx, String alias) throws Exception {
+	public static void createKeyPair(Context ctx, String alias, int keySize) throws Exception {
 		Calendar notBefore = Calendar.getInstance();
 		Calendar notAfter = Calendar.getInstance();
 		notAfter.add(Calendar.YEAR, 100);
@@ -40,7 +40,7 @@ public class RSA {
 			.setStartDate(notBefore.getTime())
 			.setEndDate(notAfter.getTime())
 			.setEncryptionRequired()
-			.setKeySize(2048)
+			.setKeySize(keySize)
 			.setKeyType("RSA")
 			.build();
 		KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance("RSA", KEYSTORE_PROVIDER);
