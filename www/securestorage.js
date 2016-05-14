@@ -1,10 +1,4 @@
 var sjcl_ss = cordova.require('cordova-plugin-secure-storage.sjcl_ss');
-var _AES_PARAM = {
-    ks: 256,
-    ts: 128,
-    mode: 'ccm',
-    cipher: 'aes'
- };
 
 var _checkCallbacks = function (success, error) {
 
@@ -54,8 +48,9 @@ var SecureStorageAndroid = function (success, error, service) {
 SecureStorageAndroid.prototype = {
 
     get: function (success, error, key) {
-        if (!_checkCallbacks(success, error))
-            return;
+        if (!_checkCallbacks(success, error)) {
+           return;
+        }
         var payload = localStorage.getItem('_SS_' + key);
         if (!payload) {
             error('Key "' + key + '" not found.');
@@ -63,42 +58,44 @@ SecureStorageAndroid.prototype = {
         }
         try {
             payload = JSON.parse(payload);
-            var AESKey = payload.key;
-            cordova.exec(
-                function (AESKey) {
-                    try {
-                        AESKey = sjcl_ss.codec.base64.toBits(AESKey);
-                        var value = sjcl_ss.decrypt(AESKey, payload.value);
-                        success(value);
-                    } catch (e) {
-                        error(e);
-                    }
-                },
-                error, "SecureStorage", "decrypt", [AESKey]);
+            if (payload.native) {
+                var AESkey = payload.key;
+                var value = payload.value;
+                var ct = value.ct;
+                var iv = value.iv;
+                var adata = value.adata;
+                cordova.exec(success, error, "SecureStorage", "decrypt", [AESkey, ct, iv, adata]);
+            } else {
+                cordova.exec(
+                    function (AESKey) {
+                        try {
+                            AESKey = sjcl_ss.codec.base64.toBits(AESKey);
+                            var value = sjcl_ss.decrypt(AESKey, payload.value);
+                            success(value);
+                        } catch (e) {
+                            error(e);
+                        }
+                    },
+                    error, "SecureStorage", "decrypt_dsa", [AESKey]);
+            }
         } catch (e) {
             error(e);
         }
-
     },
 
     set: function (success, error, key, value) {
-        if (!_checkCallbacks(success, error))
+        if (!_checkCallbacks(success, error)){
             return;
-
-        var AESKey = sjcl_ss.random.randomWords(8);
-        _AES_PARAM.adata = this.service;
-        value = sjcl_ss.encrypt(AESKey, value, _AES_PARAM);
-
-        // Ecrypt the AES key
+        }
         cordova.exec(
-            function (encKey) {
-                localStorage.setItem('_SS_' + key, JSON.stringify({key: encKey, value: value}));
+            function (result) {
+                localStorage.setItem('_SS_' + key, JSON.stringify(result));
                 success(key);
             },
             function (err) {
                 error(err);
             },
-            "SecureStorage", "encrypt", [sjcl_ss.codec.base64.fromBits(AESKey)]);
+            "SecureStorage", "encrypt", [value, this.service]);
     },
 
     remove: function(success, error, key) {

@@ -17,7 +17,6 @@ public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
     private String ALIAS;
-
     private volatile CallbackContext initContext;
     private volatile boolean initContextRunning = false;
 
@@ -58,11 +57,14 @@ public class SecureStorage extends CordovaPlugin {
         }
         if ("encrypt".equals(action)) {
             final String encryptMe = args.getString(0);
+            final String adata = args.getString(1);
+
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     try {
-                        byte[] encrypted = RSA.encrypt(encryptMe.getBytes(), ALIAS);
-                        callbackContext.success(Base64.encodeToString(encrypted, Base64.DEFAULT));
+                        Cipher encKeyCipher = RSA.createCipher(Cipher.ENCRYPT_MODE, ALIAS);
+                        JSONObject result = AES.encrypt(encKeyCipher, encryptMe.getBytes(), adata.getBytes());
+                        callbackContext.success(result);
                     } catch (Exception e) {
                         Log.e(TAG, "Encrypt failed :", e);
                         callbackContext.error(e.getMessage());
@@ -72,7 +74,28 @@ public class SecureStorage extends CordovaPlugin {
             return true;
         }
         if ("decrypt".equals(action)) {
-            final byte[] decryptMe = args.getArrayBuffer(0);// getArrayBuffer does base64 decoding
+            // getArrayBuffer does base64 decoding
+            final byte[] encKey = args.getArrayBuffer(0);
+            final byte[] ct = args.getArrayBuffer(1);
+            final byte[] iv = args.getArrayBuffer(2);
+            final byte[] adata = args.getArrayBuffer(3);
+            cordova.getThreadPool().execute(new Runnable() {
+                public void run() {
+                    try {
+                        byte[] key = RSA.decrypt(encKey, ALIAS);
+                        String decrypted = new String(AES.decrypt(ct, key, iv, adata));
+                        callbackContext.success(decrypted);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Decrypt failed :", e);
+                        callbackContext.error(e.getMessage());
+                    }
+                }
+            });
+            return true;
+        }
+        if ("decrypt_dsa".equals(action)) {
+            // getArrayBuffer does base64 decoding
+            final byte[] decryptMe = args.getArrayBuffer(0);
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     try {
@@ -86,6 +109,7 @@ public class SecureStorage extends CordovaPlugin {
             });
             return true;
         }
+
         return false;
     }
 

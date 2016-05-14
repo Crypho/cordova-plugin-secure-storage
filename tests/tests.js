@@ -92,7 +92,6 @@ exports.defineAutoTests = function() {
                 ss.remove(handlers.successHandler, handlers.errorHandler, 'foo');
             }, handlers.errorHandler, 'testing');
         });
-
         it('should be able to set and retrieve multiple values in sequence', function (done) {
             var results = [];
             spyOn(handlers, 'successHandler').and.callFake(function (res) {
@@ -111,6 +110,5 @@ exports.defineAutoTests = function() {
                 }, function () {}, 'foo', 'foo');
             }, handlers.errorHandler, 'testing');
         });
-
     });
 };
