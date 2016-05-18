@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.2.3 - 2016-05-18
+------------------
+
+- Fix broken version number in plugin.xml.
+  [ggozad]
+
 2.2.2 - 2016-05-10
 ------------------
 
