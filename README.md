@@ -10,6 +10,19 @@ This plugin is for use with [Cordova](http://incubator.apache.org/cordova/) and 
 - [Plugin API](#plugin-api)
 - [LICENSE](#license)
 
+### Important note
+
+The plugin will only work correctly if the user has created a PIN or password for the lock screen.
+If this is not the case, the user will have a popup displayed by the operating system, at application runtime
+(when calling API methods of the plugin), which will look like one of these (screenshots from Android):
+
+![screenshot1](../master/doc/popup1.png?raw=true)
+
+![screenshot2](../master/doc/popup2.png?raw=true)
+
+Please consider this before installing the plugin.
+
+
 ##<a name="installation"></a>Installation
 
 Below are the methods for installing this plugin automatically using command line tools. For additional info, take a look at the [Plugman Documentation](https://github.com/apache/cordova-plugman/blob/master/README.md) and [Cordova Plugin Specification](https://github.com/alunny/cordova-plugin-spec).
