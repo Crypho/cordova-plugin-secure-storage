@@ -6,7 +6,6 @@
 - (void)set:(CDVInvokedUrlCommand*)command;
 - (void)remove:(CDVInvokedUrlCommand*)command;
 
-@property (nonatomic, copy) NSString *callbackId;
 @property (nonatomic, copy) id keychainAccesssibilityMapping;
 
 @end
