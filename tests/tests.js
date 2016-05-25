@@ -93,6 +93,24 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, 'testing');
         });
 
+        it('should be able to set and retrieve multiple values in sequence', function (done) {
+            var results = [];
+            spyOn(handlers, 'successHandler').and.callFake(function (res) {
+                results.push(res);
+                expect(res === 'foo' || res === 'bar');
+                if (results.includes('foo') && results.includes('bar')) {
+                    done();
+                }
+            });
+            ss = new cordova.plugins.SecureStorage(function (res) {
+                ss.set(function () {
+                    ss.set(function () {
+                        ss.get(handlers.successHandler, handlers.errorHandler, 'foo');
+                        ss.get(handlers.successHandler, handlers.errorHandler, 'bar');
+                    }, function () {}, 'bar', 'bar');
+                }, function () {}, 'foo', 'foo');
+            }, handlers.errorHandler, 'testing');
+        });
 
     });
 };
