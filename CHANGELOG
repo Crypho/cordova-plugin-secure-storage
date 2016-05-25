@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.2.4 - 2016-05-25
+------------------
+
+- Fix #30, allowing concurrent calls to securestarage in iOS,
+  by not persisting callbackId's.
+  [ggozad]
+
 2.2.3 - 2016-05-18
 ------------------
 
