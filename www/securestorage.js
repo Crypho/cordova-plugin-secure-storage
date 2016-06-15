@@ -16,6 +16,24 @@ var _checkCallbacks = function (success, error) {
     }
 };
 
+var _merge_options = function (defaults, options){
+    var res = {};
+    var attrname;
+
+    for (attrname in defaults) {
+        res[attrname] = defaults[attrname];
+    }
+    for (attrname in options) {
+        if (res[attrname]) {
+            res[attrname] = options[attrname];
+        } else {
+            throw new Error('SecureStorage failure: invalid option ' + attrname);
+        }
+    }
+
+    return res;
+};
+
 SecureStorageiOS = function (success, error, service) {
     this.service = service;
     setTimeout(success, 0);
@@ -51,22 +69,23 @@ SecureStorageiOS.prototype = {
     }
 };
 
-SecureStorageAndroid = function (success, error, service, _use_sjcl) {
+SecureStorageAndroid = function (success, error, service, options) {
     var self = this;
-    var migrated;
+
+    if (options) {
+        this.options = _merge_options(this.options, options);
+    }
 
     this.service = service;
     try {
         _checkCallbacks(success, error);
         cordova.exec(
             function (native_aes_supported) {
-                if (!native_aes_supported || _use_sjcl) {
-                    self.USE_NATIVE_AES = false;
+                self.options.native = native_aes_supported && self.options.native;
+                if (!self.options.native){
                     success();
                 } else {
-                    self.USE_NATIVE_AES = native_aes_supported;
-                    migrated = localStorage.getItem('_SS_MIGRATED_TO_NATIVE');
-                    if (self.USE_NATIVE_AES && !migrated) {
+                    if (!localStorage.getItem('_SS_MIGRATED_TO_NATIVE')) {
                         self._migrate_to_native(success);
                     } else {
                         success();
@@ -85,20 +104,23 @@ SecureStorageAndroid = function (success, error, service, _use_sjcl) {
 };
 
 SecureStorageAndroid.prototype = {
+    options: {
+        native: true
+    },
 
     get: function (success, error, key) {
-        if (!this.USE_NATIVE_AES) {
-            this._sjcl_get(success, error, key);
-        } else {
+        if (this.options.native) {
             this._native_get(success, error, key);
+        } else {
+            this._sjcl_get(success, error, key);
         }
     },
 
     set: function (success, error, key, value) {
-        if (!this.USE_NATIVE_AES) {
-            this._sjcl_set(success, error, key, value);
-        } else {
+        if (this.options.native) {
             this._native_set(success, error, key, value);
+        } else {
+            this._sjcl_set(success, error, key, value);
         }
     },
 

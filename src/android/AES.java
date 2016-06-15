@@ -24,7 +24,7 @@ public class AES {
 	public static JSONObject encrypt(Cipher encKeyCipher, byte[] msg, byte[] adata) throws Exception {
 		SecretKeySpec secretKeySpec = generateKeySpec();
 		byte[] encryptedKey = encKeyCipher.doFinal(secretKeySpec.getEncoded());
-		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, secretKeySpec, adata, null);
+		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, secretKeySpec, null, adata);
 		byte[] iv = cipher.getIV();
 
 		JSONObject value = new JSONObject();
@@ -46,7 +46,7 @@ public class AES {
 
 	public static String decrypt(byte[] buf, byte[] key, byte[] iv, byte[] adata) throws Exception {
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-		Cipher cipher = createCipher(Cipher.DECRYPT_MODE, secretKeySpec, adata, new IvParameterSpec(iv));
+		Cipher cipher = createCipher(Cipher.DECRYPT_MODE, secretKeySpec, iv, adata);
 		return new String(cipher.doFinal(buf));
 	}
 
@@ -57,10 +57,10 @@ public class AES {
 	    return new SecretKeySpec(sc.getEncoded(), "AES");
 	}
 
-	private static Cipher createCipher(int cipherMode, Key key, byte[] adata, IvParameterSpec iv) throws Exception {
+	private static Cipher createCipher(int cipherMode, Key key, byte[] iv, byte[] adata) throws Exception {
 		Cipher cipher = Cipher.getInstance(CIPHER);
 		if (iv != null) {
-			cipher.init(cipherMode, key, iv);
+			cipher.init(cipherMode, key, new IvParameterSpec(iv));
 		} else {
 			cipher.init(cipherMode, key);
 		}

@@ -100,7 +100,7 @@ exports.defineAutoTests = function() {
                     done();
                 }
             });
-            ss = new cordova.plugins.SecureStorage(function (res) {
+            ss = new cordova.plugins.SecureStorage(function () {
                 ss.set(function () {
                     ss.set(function () {
                         ss.get(handlers.successHandler, handlers.errorHandler, 'foo');
@@ -131,7 +131,11 @@ exports.defineAutoTests = function() {
 
                 ss = new cordova.plugins.SecureStorage(function () {
                     ss.set(handlers.successHandler, handlers.errorHandler, 'foo', 'bar');
-                }, handlers.errorHandler, SERVICE, true);
+                },
+                handlers.errorHandler,
+                SERVICE,
+                {native: false}
+                );
             });
 
             it('should be able to get a key/value that was set before with sjcl', function (done) {
