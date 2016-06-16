@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.3.0 - 2016-06-16
+------------------
+
+- Native AES on android devices that support it.
+  [demetris-manikas]
+
 2.2.4 - 2016-05-25
 ------------------
 
