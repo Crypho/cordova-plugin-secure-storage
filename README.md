@@ -98,7 +98,7 @@ For example, include in your ``config.xml`` the following:
 
 #### iOS 7 Support
 
-iOS 7 is supported without ``WhenPasscodeSetThisDeviceOnly`` option. 
+iOS 7 is supported without ``WhenPasscodeSetThisDeviceOnly`` option.
 
 How to test the plugin using iOS 7 simulator:
  * Download and install Xcode 6 into a separate folder, e.g. /Application/Xcode 6/
@@ -110,12 +110,14 @@ How to test the plugin using iOS 7 simulator:
 #### Android
 On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureStorage`` API is implemented as follows:
 
-* A random 256-bit AES key is generated in the browser.
+* A random 256-bit AES key is generated.
 * The AES key encrypts the value.
 * The AES key is encrypted with a device-generated RSA (RSA/ECB/PKCS1Padding) from the Android KeyStore.
 * The combination of the encrypted AES key and value are stored in ``localStorage``.
 
-The inverse process is followed on ``get``. AES is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
+The inverse process is followed on ``get``.
+
+Native AES is used when available, otherwise encryption is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
 
 #### Browser
 The browser platform is supported as a mock only. Key/values are stored unencrypted in localStorage.

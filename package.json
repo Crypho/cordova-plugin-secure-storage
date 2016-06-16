@@ -4,7 +4,10 @@
   "description": "Secure storage plugin for iOS & Android",
   "author": "Yiorgis Gozadinos <ggozad@crypho.com>",
   "contributors": [
-    {"name": "Demetris Manikas", "email": "demetris.manikas@gmail.com"}
+    {
+      "name": "Demetris Manikas",
+      "email": "demetris.manikas@gmail.com"
+    }
   ],
   "cordova": {
     "id": "cordova-plugin-secure-storage",
@@ -28,8 +31,12 @@
     "type": "git",
     "url": "git+https://github.com/crypho/cordova-plugin-secure-storage.git"
   },
+  "scripts": {
+    "eslint": "./node_modules/.bin/eslint www/securestorage.js tests/tests.js"
+  },
   "devDependencies": {
-    "cordova-plugin-test-framework": ">=1.0.0"
+    "cordova-plugin-test-framework": ">=1.0.0",
+    "eslint": ""
   },
   "license": "MIT",
   "bugs": {
