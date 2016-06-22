@@ -1980,12 +1980,8 @@ sjcl.random = new sjcl.prng(6);
 (function(){
   // function for getting nodejs crypto module. catches and ignores errors.
   function getCryptoModule() {
-    try {
-      return require('crypto');
-    }
-    catch (e) {
-      return null;
-    }
+    // return require('crypto'); // it will cause browserify package a huge node-crypto polyfill into the cordova.js bundle
+    return null;
   }
 
   try {

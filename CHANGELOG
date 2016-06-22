@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.3.1 - 2016-06-22
+------------------
+
+- Patch sjcl_ss.js to prevent cordova with browserify flag including a unnecessary huge crypto-browserify polyfill.
+  [yyfearth]
+
 2.3.0 - 2016-06-16
 ------------------
 
