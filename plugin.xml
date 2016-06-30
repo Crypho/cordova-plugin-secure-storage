@@ -65,4 +65,10 @@
         </config-file>
     </platform>
 
+    <platform name="windows">
+        <js-module src="src/windows/SecureStorage.js" name="SecureStorageWindowsImpl">
+            <runs />
+        </js-module>
+    </platform>
+
 </plugin>
