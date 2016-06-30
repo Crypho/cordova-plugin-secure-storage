@@ -24,7 +24,7 @@ var _merge_options = function (defaults, options){
         res[attrname] = defaults[attrname];
     }
     for (attrname in options) {
-        if (res[attrname]) {
+        if (res.hasOwnProperty(attrname)) {
             res[attrname] = options[attrname];
         } else {
             throw new Error('SecureStorage failure: invalid option ' + attrname);
@@ -32,6 +32,33 @@ var _merge_options = function (defaults, options){
     }
 
     return res;
+};
+
+/**
+ * Helper method to execute Cordova native method
+ *
+ * @param   {String}    nativeMethodName Method to execute.
+ * @param   {Array}     args             Execution arguments.
+ * @param   {Function}  success          Called when returning successful result from an action.
+ * @param   {Function}  error            Called when returning error result from an action.
+ *
+ */
+var _executeNativeMethod = function (success, error, nativeMethodName, args) {
+    // args checking
+    _checkCallbacks(success, error);
+
+    // By convention a failure callback should always receive an instance
+    // of a JavaScript Error object.
+    var fail = function(err) {
+        // provide default message if no details passed to callback
+        if (typeof err === 'undefined') {
+            err = new Error("Error occured while executing native method.");
+        }
+        // wrap string to Error instance if necessary
+        error(typeof err === 'string' ? new Error(err) : err);
+    };
+
+    cordova.exec(success, fail, 'SecureStorage', nativeMethodName, args);
 };
 
 SecureStorageiOS = function (success, error, service) {
@@ -43,8 +70,7 @@ SecureStorageiOS = function (success, error, service) {
 SecureStorageiOS.prototype = {
     get: function (success, error, key) {
         try {
-            _checkCallbacks(success, error);
-            cordova.exec(success, error, 'SecureStorage', 'get', [this.service, key]);
+            _executeNativeMethod(success, error, 'get', [this.service, key]);
         } catch (e) {
             error(e);
         }
@@ -52,8 +78,7 @@ SecureStorageiOS.prototype = {
 
     set: function (success, error, key, value) {
         try {
-            _checkCallbacks(success, error);
-            cordova.exec(success, error, 'SecureStorage', 'set', [this.service, key, value]);
+            _executeNativeMethod(success, error, 'set', [this.service, key, value]);
         } catch (e) {
             error(e);
         }
@@ -61,8 +86,7 @@ SecureStorageiOS.prototype = {
 
     remove: function (success, error, key) {
         try {
-            _checkCallbacks(success, error);
-            cordova.exec(success, error, 'SecureStorage', 'remove', [this.service, key]);
+            _executeNativeMethod(success, error, 'remove', [this.service, key]);
         } catch (e) {
             error(e);
         }
@@ -78,8 +102,7 @@ SecureStorageAndroid = function (success, error, service, options) {
 
     this.service = service;
     try {
-        _checkCallbacks(success, error);
-        cordova.exec(
+        _executeNativeMethod(
             function (native_aes_supported) {
                 self.options.native = native_aes_supported && self.options.native;
                 if (!self.options.native){
@@ -93,7 +116,6 @@ SecureStorageAndroid = function (success, error, service, options) {
                 }
             },
             error,
-            'SecureStorage',
             'init',
             [this.service]
         );
@@ -133,10 +155,9 @@ SecureStorageAndroid.prototype = {
         var payload, encAESKey;
 
         try {
-            _checkCallbacks(success, error);
             payload = this._get_payload(key);
             encAESKey = payload.key;
-            cordova.exec(
+            _executeNativeMethod(
                 function (AESKey) {
                     var value, AESKeyBits;
                     try {
@@ -148,7 +169,6 @@ SecureStorageAndroid.prototype = {
                     }
                 },
                 error,
-                'SecureStorage',
                 'decrypt_rsa',
                 [encAESKey]
             );
@@ -161,18 +181,16 @@ SecureStorageAndroid.prototype = {
         var AESKey, encValue;
 
         try {
-            _checkCallbacks(success, error);
             AESKey = sjcl_ss.random.randomWords(8);
             _AES_PARAM.adata = this.service;
             encValue = sjcl_ss.encrypt(AESKey, value, _AES_PARAM);
             // Encrypt the AES key
-            cordova.exec(
+            _executeNativeMethod(
                 function (encKey) {
                     localStorage.setItem('_SS_' + key, JSON.stringify({key: encKey, value: encValue}));
                     success(key);
                 },
                 error,
-                'SecureStorage',
                 'encrypt_rsa',
                 [sjcl_ss.codec.base64.fromBits(AESKey)]
             );
@@ -185,14 +203,12 @@ SecureStorageAndroid.prototype = {
         var payload, AESkey, value;
 
         try {
-            _checkCallbacks(success, error);
             payload = this._get_payload(key);
             AESkey = payload.key;
             value = payload.value;
-            cordova.exec(
+            _executeNativeMethod(
                 success,
                 error,
-                'SecureStorage',
                 'decrypt',
                 [AESkey, value.ct, value.iv, value.adata]
             );
@@ -203,14 +219,12 @@ SecureStorageAndroid.prototype = {
 
     _native_set: function (success, error, key, value) {
         try {
-            _checkCallbacks(success, error);
-            cordova.exec(
+            _executeNativeMethod(
                 function (result) {
                     localStorage.setItem('_SS_' + key, JSON.stringify(result));
                     success(key);
                 },
                 error,
-                'SecureStorage',
                 'encrypt',
                 [value, this.service]
             );
@@ -298,7 +312,7 @@ SecureStorageBrowser.prototype = {
             _checkCallbacks(success, error);
             value = localStorage.getItem('_SS_' + key);
             if (!value) {
-                error('Key "' + key + '"not found.');
+                error(new Error('Key "' + key + '" not found.'));
             } else {
                 success(value);
             }
