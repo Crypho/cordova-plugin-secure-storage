@@ -2,6 +2,11 @@ exports.defineAutoTests = function() {
     var ss, handlers;
     var SERVICE = 'testing';
 
+    // Fixes Object [object Array] has no method 'includes' on Android 4.4 emulator
+    Array.prototype.includes = Array.prototype.includes || function(value) {
+        return this.indexOf(value) >= 0;
+    }
+
     describe('cordova-plugin-secure-storage', function () {
 
         beforeEach(function () {
@@ -95,7 +100,7 @@ exports.defineAutoTests = function() {
             var results = [];
             spyOn(handlers, 'successHandler').and.callFake(function (res) {
                 results.push(res);
-                expect(res === 'foo' || res === 'bar');
+                expect(res === 'foo' || res === 'bar').toBe(true);
                 if (results.includes('foo') && results.includes('bar')) {
                     done();
                 }
