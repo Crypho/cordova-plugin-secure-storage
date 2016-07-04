@@ -1,8 +1,14 @@
-# SecureStorage plugin for iOS & Android
+# SecureStorage plugin for Apache Cordova
 
 ## Introduction
 
-This plugin is for use with [Cordova](http://incubator.apache.org/cordova/) and allows your application to securely store secrets on iOS & Android phones.
+This plugin is for use with [Cordova](http://incubator.apache.org/cordova/) and allows your application to securely store secrets on  iOS & Android phones and Windows devices.
+
+### Supported platforms
+
+  * Android
+  * iOS
+  * Windows (Windows 8.x/Store, Windows 10/UWP and Windows Phone 8.1+)
 
 ### Contents
 
@@ -118,6 +124,13 @@ On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureS
 The inverse process is followed on ``get``.
 
 Native AES is used when available, otherwise encryption is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
+
+#### Windows
+Windows implementation is based on [PasswordVault](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.passwordvault.aspx) object from the [Windows.Security.Credentials](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.aspx) namespace.
+The contents of the locker are specific to the app so different apps and services don't have access to credentials associated with other apps or services.
+
+**Limitations:** you can only store up to ten credentials per app. If you try to store more than ten credentials, you will
+encounter an error. Read [documentation](https://msdn.microsoft.com/en-us/library/windows/apps/hh701231.aspx) for more details.
 
 #### Browser
 The browser platform is supported as a mock only. Key/values are stored unencrypted in localStorage.

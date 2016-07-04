@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-secure-storage"
-    version="2.3.1">
+    version="2.4.0">
 
     <name>SecureStorage</name>
     <author>Crypho AS</author>
@@ -63,6 +63,12 @@
                 <param name="browser-package" value="SecureStorage" />
             </feature>
         </config-file>
+    </platform>
+
+    <platform name="windows">
+        <js-module src="src/windows/SecureStorage.js" name="SecureStorageWindowsImpl">
+            <runs />
+        </js-module>
     </platform>
 
 </plugin>
