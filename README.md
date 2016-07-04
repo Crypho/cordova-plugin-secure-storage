@@ -2,7 +2,8 @@
 
 ## Introduction
 
-This plugin is for use with [Cordova](http://incubator.apache.org/cordova/) and allows your application to securely store secrets on  iOS & Android phones and Windows devices.
+This plugin is for use with [Apache Cordova](http://cordova.apache.org/) and allows your application to securely store secrets
+such as usernames, passwords, tokens, certificates or other sensitive information (strings) on iOS & Android phones and Windows devices.
 
 ### Supported platforms
 
@@ -18,7 +19,7 @@ This plugin is for use with [Cordova](http://incubator.apache.org/cordova/) and 
 
 ##<a name="installation"></a>Installation
 
-Below are the methods for installing this plugin automatically using command line tools. For additional info, take a look at the [Plugman Documentation](https://github.com/apache/cordova-plugman/blob/master/README.md) and [Cordova Plugin Specification](https://github.com/alunny/cordova-plugin-spec).
+Below are the methods for installing this plugin automatically using command line tools. For additional info, take a look at the [Plugman Documentation](https://cordova.apache.org/docs/en/latest/plugin_ref/plugman.html), [`cordova plugin` command](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html#cordova-plugin-command) and [Cordova Plugin Specification](https://cordova.apache.org/docs/en/latest/plugin_ref/spec.html).
 
 ### Cordova
 
@@ -83,7 +84,7 @@ ss.remove(
 On iOS secrets are stored directly in the KeyChain through the [SSKeychain](https://github.com/soffes/sskeychain) library.
 
 ##### Configuration
-It it possible to configure the accessibility of the keychain by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
+On iOS it is possible to configure the accessibility of the keychain by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
  * AfterFirstUnlock
  * AfterFirstUnlockThisDeviceOnly
  * WhenUnlocked
