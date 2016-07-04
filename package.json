@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-secure-storage",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Secure storage plugin for iOS & Android",
   "author": "Yiorgis Gozadinos <ggozad@crypho.com>",
   "contributors": [
@@ -13,7 +13,9 @@
     "id": "cordova-plugin-secure-storage",
     "platforms": [
       "android",
-      "ios"
+      "ios",
+      "wp8",
+      "windows"
     ]
   },
   "keywords": [
@@ -24,7 +26,9 @@
     "ecosystem:cordova",
     "cordova-android",
     "cordova-ios",
-    "cordova-browser"
+    "cordova-wp8",
+    "cordova-windows",
+    "cordova-browser",
   ],
   "main": "www/securestorage.js",
   "repository": {

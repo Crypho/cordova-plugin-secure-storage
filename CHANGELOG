@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.3.2 - Unreleased
+2.4.0 - 2016-07-04
 ------------------
+
+- Windows phone implementation.
+  [sgrebnov]
 
 - Pass javascript Error to cordova failure callbacks, cleanup.
   [sgrebnov]
