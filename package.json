@@ -28,7 +28,7 @@
     "cordova-ios",
     "cordova-wp8",
     "cordova-windows",
-    "cordova-browser",
+    "cordova-browser"
   ],
   "main": "www/securestorage.js",
   "repository": {
