@@ -121,7 +121,7 @@ SecureStorageAndroid = function (success, error, service, options) {
             },
             error,
             'init',
-            [this.service]
+            [this.service, options.preventNoPinDialog]
         );
     } catch (e) {
         error(e);
@@ -131,7 +131,8 @@ SecureStorageAndroid = function (success, error, service, options) {
 
 SecureStorageAndroid.prototype = {
     options: {
-        native: true
+        native: true,
+        preventNoPinDialog: false
     },
 
     get: function (success, error, key) {

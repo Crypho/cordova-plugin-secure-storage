@@ -12,6 +12,7 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONException;
 import org.json.JSONObject;
 import javax.crypto.Cipher;
+import android.app.KeyguardManager;
 
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
@@ -44,13 +45,22 @@ public class SecureStorage extends CordovaPlugin {
         }
     }
 
+    private boolean isPinSet() {
+        KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
+        return keyguardManager.isKeyguardSecure();
+    }
+
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if ("init".equals(action)) {
             // 0 is falsy in js while 1 is truthy
             SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= 21 ? 1 : 0;
             ALIAS = getContext().getPackageName() + "." + args.getString(0);
-            if (!RSA.isEntryAvailable(ALIAS)) {
+            boolean preventPinDialog = args.getBoolean(1);
+
+            if (preventPinDialog && !isPinSet()) {
+                callbackContext.success(SUPPORTS_NATIVE_AES);
+            } else if (!RSA.isEntryAvailable(ALIAS)) {
                 initContext = callbackContext;
                 unlockCredentials();
             } else {
