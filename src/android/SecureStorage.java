@@ -45,9 +45,9 @@ public class SecureStorage extends CordovaPlugin {
         }
     }
 
-    private boolean isPinSet() {
+    private boolean isDeviceSecure() {
         KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
-        return keyguardManager.isKeyguardSecure();
+        return keyguardManager.isDeviceSecure();
     }
 
     @Override
@@ -56,10 +56,12 @@ public class SecureStorage extends CordovaPlugin {
             // 0 is falsy in js while 1 is truthy
             SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= 21 ? 1 : 0;
             ALIAS = getContext().getPackageName() + "." + args.getString(0);
-            boolean preventPinDialog = args.getBoolean(1);
+            boolean failOnDeviceInsecure = args.getBoolean(1);
 
-            if (preventPinDialog && !isPinSet()) {
-                callbackContext.success(SUPPORTS_NATIVE_AES);
+            if (failOnDeviceInsecure && !isDeviceSecure()) {
+                String message = "Device is not secure and plugin configured to failOnDeviceInsecure";
+                Log.e(TAG, message);
+                callbackContext.error(message);
             } else if (!RSA.isEntryAvailable(ALIAS)) {
                 initContext = callbackContext;
                 unlockCredentials();
