@@ -132,7 +132,7 @@ The plugin will only work correctly if the user has created a PIN or password fo
 
 ```js
 new window.cordova.plugins.SecureStorage(
-	success, error, key, {preventNoPinDialog: true}
+	success, error, key, {failOnDeviceInsecure: true}
 );
 ```
 
