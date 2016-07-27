@@ -127,6 +127,16 @@ The inverse process is followed on ``get``.
 
 Native AES is used when available, otherwise encryption is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
 
+##### Users must have a PIN code set
+
+The plugin will only work correctly if the user has created a PIN or password for the lock screen. When the plugin initializes the operating system will display a popup telling the user to set a pin, you can prevent the popup by passing the below additional option.
+
+```js
+new window.cordova.plugins.SecureStorage(
+	success, error, key, {failOnDeviceInsecure: true}
+);
+```
+
 #### Windows
 Windows implementation is based on [PasswordVault](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.passwordvault.aspx) object from the [Windows.Security.Credentials](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.aspx) namespace.
 The contents of the locker are specific to the app so different apps and services don't have access to credentials associated with other apps or services.
