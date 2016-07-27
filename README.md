@@ -127,14 +127,20 @@ The inverse process is followed on ``get``.
 
 Native AES is used when available, otherwise encryption is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
 
-##### Users must have a PIN code set
+##### Users must have a secure screen-lock set.
 
-The plugin will only work correctly if the user has created a PIN or password for the lock screen. When the plugin initializes the operating system will display a popup telling the user to set a pin, you can prevent the popup by passing the below additional option.
+The plugin will only work correctly if the user has not created a PIN or password for the lock screen. In that case the plugin will fail to initialize. The app developer should inform the user about the security requirements of her app and initialize again after the user has changed the screen-lock settings. To facilitate this you can call ``secureDevice`` which will bring up the screen-lock settings.
+
+For example,
 
 ```js
-new window.cordova.plugins.SecureStorage(
-	success, error, key, {failOnDeviceInsecure: true}
-);
+ss = new cordova.plugins.SecureStorage(
+	success,
+    function (e) {
+        // Screen lock is not set to a strong enough setting.
+        alert('You need to setup a PIN lock to use this app');
+        ss.secureDevice(function () {}, function () {});
+    }, 'my_app');
 ```
 
 #### Windows
