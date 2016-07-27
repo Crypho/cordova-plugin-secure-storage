@@ -1,3 +1,4 @@
+
 # SecureStorage plugin for Apache Cordova
 
 ## Introduction
@@ -145,6 +146,31 @@ The browser platform is supported as a mock only. Key/values are stored unencryp
 * Do my users really need to set a PIN code on their android devices to use the plugin?
 
     Yes, sorry. Android will not allow the creation of cryptographic keys unless the user has enabled at least PIN locking on the device.
+
+## Testing
+
+### Setup
+
+1. Create a cordova app.
+2. Change the start page in config.xml with ``<content src="cdvtests/index.html" />``
+3. Add your platforms.
+4. Add the ``cordova-plugin-test-framework`` plugin:
+
+```
+cordova plugin add http://git-wip-us.apache.org/repos/asf/cordova-plugin-test-framework.git
+```
+
+5. Finally add the secure storage plugin as well as the tests from its location
+
+```
+cordova plugin add PATH_TO_SECURE_STORAGE_PLUGIN
+cordova plugin add PATH_TO_SECURE_STORAGE_PLUGIN/tests
+```
+
+### Running the tests
+
+Just run the app for all platforms. Remember, if you have changes to test you will need to remove the secure storage plugin and add it again for the changes to be seen by the app.
+
 
 ##<a name="license"></a> LICENSE
 
