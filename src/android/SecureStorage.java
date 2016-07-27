@@ -1,5 +1,7 @@
 package com.crypho.plugins;
 
+import java.lang.reflect.Method;
+
 import android.util.Log;
 import android.util.Base64;
 import android.os.Build;
@@ -47,7 +49,13 @@ public class SecureStorage extends CordovaPlugin {
 
     private boolean isDeviceSecure() {
         KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
-        return keyguardManager.isDeviceSecure();
+        try {
+            Method isSecure = null;
+            isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
+            return ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
+        } catch (Exception e) {
+            return keyguardManager.isKeyguardSecure();
+        }
     }
 
     @Override
