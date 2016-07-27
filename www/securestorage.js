@@ -121,7 +121,7 @@ SecureStorageAndroid = function (success, error, service, options) {
             },
             error,
             'init',
-            [this.service, options.failOnDeviceInsecure]
+            [this.service]
         );
     } catch (e) {
         error(e);
@@ -132,7 +132,6 @@ SecureStorageAndroid = function (success, error, service, options) {
 SecureStorageAndroid.prototype = {
     options: {
         native: true,
-        failOnDeviceInsecure: false
     },
 
     get: function (success, error, key) {
