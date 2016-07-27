@@ -1,6 +1,7 @@
+var SERVICE = 'testing';
+
 exports.defineAutoTests = function() {
     var ss, handlers;
-    var SERVICE = 'testing';
 
     describe('cordova-plugin-secure-storage', function () {
 
@@ -151,6 +152,26 @@ exports.defineAutoTests = function() {
                 }, handlers.errorHandler, SERVICE);
             });
 
+        });
+    }
+};
+
+exports.defineManualTests = function(contentEl, createActionButton) {
+    if (cordova.platformId === 'android') {
+        createActionButton('Init tests for android', function() {
+            alert('You should run these tests twice. Oncee without screen locking, and once with screen locking set to PIN. When lock is disabled you should be prompted to set it.');
+            ss = new cordova.plugins.SecureStorage(
+                function () {
+                    alert('Init successfull.');
+                },
+                function () {
+                    alert('Init failed. The screen lock settings should now open. Set PIN or above.');
+                    ss.secureDevice(
+                        function () {
+                        },
+                        function () {}
+                    );
+                }, SERVICE);
         });
     }
 };

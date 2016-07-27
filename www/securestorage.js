@@ -155,6 +155,14 @@ SecureStorageAndroid.prototype = {
         success(key);
     },
 
+    secureDevice: function (success, error) {
+        _executeNativeMethod(
+            success,
+            error,
+            'secureDevice', []);
+
+    },
+
     _sjcl_get: function (success, error, key) {
         var payload, encAESKey;
 

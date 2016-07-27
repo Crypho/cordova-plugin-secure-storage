@@ -145,7 +145,19 @@ public class SecureStorage extends CordovaPlugin {
             });
             return true;
         }
+
+        if ("secureDevice".equals(action)) {
+            try {
+                unlockCredentials();
+                callbackContext.success();
+            } catch (Exception e) {
+                callbackContext.error(e.getMessage());
+            }
+            return true;
+        }
+
         return false;
+
     }
 
     private void unlockCredentials() {
