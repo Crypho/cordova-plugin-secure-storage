@@ -133,16 +133,35 @@ The plugin will only work correctly if the user has sufficiently secure settings
 
 In case of failure to initialize, the app developer should inform the user about the security requirements of her app and initialize again after the user has changed the screen-lock settings. To facilitate this, we provide ``secureDevice`` which will bring up the screen-lock settings and will call the success or failure callbacks depending on whether the user locked the screen appropriately.
 
-For example,
+For example, this would keep asking the user to enable screen lock forever. Obviously adapt to your needs :)
 
 ```js
-ss = new cordova.plugins.SecureStorage(
-	success,
-    function (e) {
-        // Screen lock is not set to a strong enough setting.
-        alert('You need to setup a PIN lock to use this app');
-        ss.secureDevice(function () {}, function () {});
-    }, 'my_app');
+var ss;
+var _init = function () {
+    ss = new cordova.plugins.SecureStorage(
+        function () {
+            console.log('OK');
+        },
+        function () {
+            navigator.notification.alert(
+                'Please enable the screen lock on your device. This app cannot operate securely without it.',
+                function () {
+                    ss.secureDevice(
+                        function () {
+                            console.log('OK');
+                        },
+                        function () {
+                            _init();
+                        }
+                    );
+                },
+                'Screen lock is disabled'
+            );
+        },
+        'my_app');
+};
+_init();
+
 ```
 
 #### Windows
