@@ -168,8 +168,11 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                     alert('Init failed. The screen lock settings should now open. Set PIN or above.');
                     ss.secureDevice(
                         function () {
+                            alert('Device is secure.');
                         },
-                        function () {}
+                        function () {
+                            alert('Device is not secure.');
+                        }
                     );
                 }, SERVICE);
         });

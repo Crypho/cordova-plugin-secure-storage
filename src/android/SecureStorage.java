@@ -21,11 +21,21 @@ public class SecureStorage extends CordovaPlugin {
 
     private String ALIAS;
     private int SUPPORTS_NATIVE_AES;
-    private volatile CallbackContext initContext;
+    private volatile CallbackContext initContext, secureDeviceContext;
     private volatile boolean initContextRunning = false;
 
     @Override
     public void onResume(boolean multitasking) {
+
+        if (secureDeviceContext != null) {
+            if (isDeviceSecure()) {
+                secureDeviceContext.success();
+            } else {
+                secureDeviceContext.error("Device is not secure");
+            }
+            secureDeviceContext = null;
+        }
+
         if (initContext != null && !initContextRunning) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
@@ -147,12 +157,8 @@ public class SecureStorage extends CordovaPlugin {
         }
 
         if ("secureDevice".equals(action)) {
-            try {
-                unlockCredentials();
-                callbackContext.success();
-            } catch (Exception e) {
-                callbackContext.error(e.getMessage());
-            }
+            secureDeviceContext = callbackContext;
+            unlockCredentials();
             return true;
         }
 
