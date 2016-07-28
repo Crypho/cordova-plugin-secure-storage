@@ -129,7 +129,9 @@ Native AES is used when available, otherwise encryption is provided by the [sjcl
 
 ##### Users must have a secure screen-lock set.
 
-The plugin will only work correctly if the user has not created a PIN or password for the lock screen. In that case the plugin will fail to initialize. The app developer should inform the user about the security requirements of her app and initialize again after the user has changed the screen-lock settings. To facilitate this you can call ``secureDevice`` which will bring up the screen-lock settings.
+The plugin will only work correctly if the user has sufficiently secure settings on the lock screen. If not, the plugin will fail to initialize and the failure callback will be called on ``init()``. This is because in order to use the Android Credential Storage and create RSA keys the device needs to be somewhat secure.
+
+In case of failure to initialize, the app developer should inform the user about the security requirements of her app and initialize again after the user has changed the screen-lock settings. To facilitate this, we provide ``secureDevice`` which will bring up the screen-lock settings and will call the success or failure callbacks depending on whether the user locked the screen appropriately.
 
 For example,
 
