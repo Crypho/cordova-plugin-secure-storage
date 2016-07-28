@@ -1,5 +1,7 @@
 package com.crypho.plugins;
 
+import java.lang.reflect.Method;
+
 import android.util.Log;
 import android.util.Base64;
 import android.os.Build;
@@ -12,17 +14,28 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONException;
 import org.json.JSONObject;
 import javax.crypto.Cipher;
+import android.app.KeyguardManager;
 
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
     private String ALIAS;
     private int SUPPORTS_NATIVE_AES;
-    private volatile CallbackContext initContext;
+    private volatile CallbackContext initContext, secureDeviceContext;
     private volatile boolean initContextRunning = false;
 
     @Override
     public void onResume(boolean multitasking) {
+
+        if (secureDeviceContext != null) {
+            if (isDeviceSecure()) {
+                secureDeviceContext.success();
+            } else {
+                secureDeviceContext.error("Device is not secure");
+            }
+            secureDeviceContext = null;
+        }
+
         if (initContext != null && !initContextRunning) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
@@ -44,13 +57,28 @@ public class SecureStorage extends CordovaPlugin {
         }
     }
 
+    private boolean isDeviceSecure() {
+        KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
+        try {
+            Method isSecure = null;
+            isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
+            return ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
+        } catch (Exception e) {
+            return keyguardManager.isKeyguardSecure();
+        }
+    }
+
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if ("init".equals(action)) {
             // 0 is falsy in js while 1 is truthy
             SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= 21 ? 1 : 0;
             ALIAS = getContext().getPackageName() + "." + args.getString(0);
-            if (!RSA.isEntryAvailable(ALIAS)) {
+            if (!isDeviceSecure()) {
+                String message = "Device is not secure";
+                Log.e(TAG, message);
+                callbackContext.error(message);
+            } else if (!RSA.isEntryAvailable(ALIAS)) {
                 initContext = callbackContext;
                 unlockCredentials();
             } else {
@@ -127,7 +155,15 @@ public class SecureStorage extends CordovaPlugin {
             });
             return true;
         }
+
+        if ("secureDevice".equals(action)) {
+            secureDeviceContext = callbackContext;
+            unlockCredentials();
+            return true;
+        }
+
         return false;
+
     }
 
     private void unlockCredentials() {

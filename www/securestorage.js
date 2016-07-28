@@ -131,7 +131,7 @@ SecureStorageAndroid = function (success, error, service, options) {
 
 SecureStorageAndroid.prototype = {
     options: {
-        native: true
+        native: true,
     },
 
     get: function (success, error, key) {
@@ -153,6 +153,14 @@ SecureStorageAndroid.prototype = {
     remove: function (success, error, key) {
         localStorage.removeItem('_SS_' + key);
         success(key);
+    },
+
+    secureDevice: function (success, error) {
+        _executeNativeMethod(
+            success,
+            error,
+            'secureDevice', []);
+
     },
 
     _sjcl_get: function (success, error, key) {

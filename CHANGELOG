@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.4.1 -
+------------------
+
+- Make intitializing SecureStorage fail on android if screen-lock settings not appropriate.
+  Introdudce secureDevice as an android-only function to bring up screen-lock settings with only appropriate options.
+  [ggozad, jdard, demetris-manikas]
+
 2.4.0 - 2016-07-04
 ------------------
 

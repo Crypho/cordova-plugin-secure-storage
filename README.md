@@ -127,6 +127,24 @@ The inverse process is followed on ``get``.
 
 Native AES is used when available, otherwise encryption is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library.
 
+##### Users must have a secure screen-lock set.
+
+The plugin will only work correctly if the user has sufficiently secure settings on the lock screen. If not, the plugin will fail to initialize and the failure callback will be called on ``init()``. This is because in order to use the Android Credential Storage and create RSA keys the device needs to be somewhat secure.
+
+In case of failure to initialize, the app developer should inform the user about the security requirements of her app and initialize again after the user has changed the screen-lock settings. To facilitate this, we provide ``secureDevice`` which will bring up the screen-lock settings and will call the success or failure callbacks depending on whether the user locked the screen appropriately.
+
+For example,
+
+```js
+ss = new cordova.plugins.SecureStorage(
+	success,
+    function (e) {
+        // Screen lock is not set to a strong enough setting.
+        alert('You need to setup a PIN lock to use this app');
+        ss.secureDevice(function () {}, function () {});
+    }, 'my_app');
+```
+
 #### Windows
 Windows implementation is based on [PasswordVault](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.passwordvault.aspx) object from the [Windows.Security.Credentials](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.aspx) namespace.
 The contents of the locker are specific to the app so different apps and services don't have access to credentials associated with other apps or services.
