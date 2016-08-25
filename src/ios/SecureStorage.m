@@ -95,7 +95,7 @@
         if ([query deleteItem:&error]) {
             [self successWithMessage: key : command.callbackId];
         } else {
-            [self failWithMessage: @"Failure in SecureStorage.get()" : error : command.callbackId];
+            [self failWithMessage: @"Failure in SecureStorage.remove()" : error : command.callbackId];
         }
     }];
 }
