@@ -82,7 +82,7 @@ ss.remove(
 ##Platform details
 
 #### iOS
-On iOS secrets are stored directly in the KeyChain through the [SSKeychain](https://github.com/soffes/sskeychain) library.
+On iOS secrets are stored directly in the KeyChain through the [SAMKeychain](https://github.com/soffes/samkeychain) library.
 
 ##### Configuration
 On iOS it is possible to configure the accessibility of the keychain by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
