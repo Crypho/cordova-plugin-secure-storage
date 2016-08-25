@@ -41,6 +41,8 @@
         <source-file src="src/ios/SAMKeychain/SAMKeychainQuery.m" />
         <header-file src="src/ios/SAMKeychain/SAMKeychainQuery.h" />
 
+        <resource-file src="src/ios/SAMKeychain/SAMKeychain.bundle" />
+
         <framework src="Security.framework" />
 
     </platform>
