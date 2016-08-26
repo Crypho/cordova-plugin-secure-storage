@@ -2,7 +2,7 @@
 #import <Security/Security.h>
 #import "SecureStorage.h"
 #import <Cordova/CDV.h>
-#import "SSKeychain.h"
+#import "SAMKeychain.h"
 
 @implementation SecureStorage
 
@@ -15,7 +15,7 @@
     [self.commandDelegate runInBackground:^{
         NSError *error;
 
-        SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
+        SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
         query.service = service;
         query.account = key;
 
@@ -64,10 +64,10 @@
 
         if ([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)] != nil) {
             CFTypeRef accessibility = (__bridge CFTypeRef)([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
-            [SSKeychain setAccessibilityType:accessibility];
+            [SAMKeychain setAccessibilityType:accessibility];
         }
 
-        SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
+        SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
 
         query.service = service;
         query.account = key;
@@ -88,14 +88,14 @@
     [self.commandDelegate runInBackground:^{
         NSError *error;
 
-        SSKeychainQuery *query = [[SSKeychainQuery alloc] init];
+        SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
         query.service = service;
         query.account = key;
 
         if ([query deleteItem:&error]) {
             [self successWithMessage: key : command.callbackId];
         } else {
-            [self failWithMessage: @"Failure in SecureStorage.get()" : error : command.callbackId];
+            [self failWithMessage: @"Failure in SecureStorage.remove()" : error : command.callbackId];
         }
     }];
 }
