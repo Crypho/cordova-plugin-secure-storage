@@ -80,6 +80,25 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
+        it('should call the error handler when getting a key that existed but got deleted', function (done) {
+            spyOn(handlers, 'errorHandler').and.callFake(function () {
+                expect(handlers.successHandler).not.toHaveBeenCalled();
+                done();
+            });
+            spyOn(handlers, 'successHandler');
+
+            ss = new cordova.plugins.SecureStorage(function () {
+
+                ss.set(function () {
+                    ss.remove(function () {
+                        ss.get(handlers.successHandler, handlers.errorHandler, 'test');
+                    }, function () {}, 'test');
+                }, function () {}, 'test', 'bar');
+
+            }, handlers.errorHandler, SERVICE);
+        });
+
+
         it('should be able to remove a key/value', function (done) {
             spyOn(handlers, 'successHandler').and.callFake(function (res) {
                 expect(res).toEqual('foo');
@@ -92,6 +111,7 @@ exports.defineAutoTests = function() {
                 ss.remove(handlers.successHandler, handlers.errorHandler, 'foo');
             }, handlers.errorHandler, SERVICE);
         });
+
         it('should be able to set and retrieve multiple values in sequence', function (done) {
             var results = [];
             spyOn(handlers, 'successHandler').and.callFake(function (res) {
