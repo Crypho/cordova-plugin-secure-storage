@@ -1,6 +1,8 @@
 
 # SecureStorage plugin for Apache Cordova
 
+[![NPM](https://nodei.co/npm/cordova-plugin-secure-storage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-secure-storage/)
+
 ## Introduction
 
 This plugin is for use with [Apache Cordova](http://cordova.apache.org/) and allows your application to securely store secrets
