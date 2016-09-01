@@ -1,12 +1,14 @@
 Changelog
 =========
 
-
-2.4.2 -
+2.4.2 - 2016-09-01
 ------------------
 
 - Update SSKeychain for iOS to SAMKeychain.
   [briananderson1222]
+
+- More tests.
+  [ggozad]
 
 2.4.1 - 2016-07-28
 ------------------
