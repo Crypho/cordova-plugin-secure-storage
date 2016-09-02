@@ -142,7 +142,6 @@ exports.defineAutoTests = function() {
             });
 
             it('should be able to set a key/value with sjcl', function (done) {
-                localStorage.clear();
                 spyOn(handlers, 'successHandler').and.callFake(function (res) {
                     expect(res).toEqual('foo');
                     expect(handlers.errorHandler).not.toHaveBeenCalled();
@@ -150,12 +149,18 @@ exports.defineAutoTests = function() {
                 });
                 spyOn(handlers, 'errorHandler');
 
-                ss = new cordova.plugins.SecureStorage(function () {
-                    ss.set(handlers.successHandler, handlers.errorHandler, 'foo', 'bar');
-                },
-                handlers.errorHandler,
-                SERVICE,
-                {native: false}
+                ss = new cordova.plugins.SecureStorage(
+                    function () {
+                        ss.clear(
+                            function () {
+                                ss.set(handlers.successHandler, handlers.errorHandler, 'foo', 'bar');
+                            },
+                            handlers.errorHandler
+                        );
+                    },
+                    handlers.errorHandler,
+                    SERVICE,
+                    {native: false}
                 );
             });
 
@@ -172,11 +177,45 @@ exports.defineAutoTests = function() {
                 }, handlers.errorHandler, SERVICE);
             });
 
+            it('should move entries from localstorage to SharedPreferences', function (done) {
+                localStorage.clear();
+                localStorage.setItem('_SS_foo', 'bar');
+                spyOn(handlers, 'successHandler').and.callFake(function () {
+                    expect(localStorage.getItem('_SS_foo')).toBeNull();
+                    ss._fetch(
+                        function (res) {
+                            expect(res).toEqual('bar');
+                            expect(handlers.errorHandler).not.toHaveBeenCalled();
+                            //cleanup
+                            ss.remove(
+                                function () {
+                                    done();
+                                },
+                                function () {
+                                },
+                                'foo'
+                            );
+                        },
+                        handlers.errorHandler,
+                        'foo'
+                    );
+
+                });
+                spyOn(handlers, 'errorHandler');
+
+                ss = new cordova.plugins.SecureStorage(
+                    handlers.successHandler,
+                    handlers.errorHandler,
+                    SERVICE,
+                    {migrateLocalStorage: true}
+                );
+            });
         });
     }
 };
 
 exports.defineManualTests = function(contentEl, createActionButton) {
+    var ss;
     if (cordova.platformId === 'android') {
         createActionButton('Init tests for android', function() {
             alert('You should run these tests twice. Oncee without screen locking, and once with screen locking set to PIN. When lock is disabled you should be prompted to set it.');
