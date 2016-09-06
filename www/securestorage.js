@@ -44,18 +44,20 @@ var _merge_options = function (defaults, options){
  *
  */
 var _executeNativeMethod = function (success, error, nativeMethodName, args) {
+    var fail;
     // args checking
     _checkCallbacks(success, error);
 
     // By convention a failure callback should always receive an instance
     // of a JavaScript Error object.
-    var fail = function(err) {
+    fail = function(err) {
         // provide default message if no details passed to callback
         if (typeof err === 'undefined') {
-            err = new Error("Error occured while executing native method.");
+            error(new Error('Error occured while executing native method.'));
+        } else {
+            // wrap string to Error instance if necessary
+            error(typeof err === 'string' ? new Error(err) : err);
         }
-        // wrap string to Error instance if necessary
-        error(typeof err === 'string' ? new Error(err) : err);
     };
 
     cordova.exec(success, fail, 'SecureStorage', nativeMethodName, args);
@@ -108,15 +110,39 @@ SecureStorageAndroid = function (success, error, service, options) {
     try {
         _executeNativeMethod(
             function (native_aes_supported) {
-                self.options.native = native_aes_supported && self.options.native;
-                if (!self.options.native){
-                    success();
-                } else {
-                    if (!localStorage.getItem('_SS_MIGRATED_TO_NATIVE')) {
-                        self._migrate_to_native(success);
-                    } else {
+                var checkMigrateToNativeAES;
+
+                checkMigrateToNativeAES = function () {
+                    self.options.native = native_aes_supported && self.options.native;
+                    if (!self.options.native){
                         success();
+                    } else {
+                        _executeNativeMethod(
+                            function () {
+                                success();
+                            },
+                            function() {
+                                self._migrate_to_native_aes(success);
+                            },
+                            'fetch',
+                            ['_SS_MIGRATED_TO_NATIVE']
+                        );
                     }
+                };
+
+                if (self.options.migrateLocalStorage){
+                    self._migrate_to_native_storage(checkMigrateToNativeAES);
+                } else {
+                    _executeNativeMethod(
+                        function () {
+                            checkMigrateToNativeAES();
+                        },
+                        function() {
+                            self._migrate_to_native_storage(checkMigrateToNativeAES);
+                        },
+                        'fetch',
+                        ['_SS_MIGRATED_TO_NATIVE_STORAGE']
+                    );
                 }
             },
             error,
@@ -132,6 +158,7 @@ SecureStorageAndroid = function (success, error, service, options) {
 SecureStorageAndroid.prototype = {
     options: {
         native: true,
+        migrateLocalStorage: false
     },
 
     get: function (success, error, key) {
@@ -151,39 +178,72 @@ SecureStorageAndroid.prototype = {
     },
 
     remove: function (success, error, key) {
-        localStorage.removeItem('_SS_' + key);
-        success(key);
+        _executeNativeMethod(
+            function () {
+                success(key);
+            },
+            error,
+            'remove',
+            ['_SS_' + key]
+        );
     },
 
     secureDevice: function (success, error) {
         _executeNativeMethod(
             success,
             error,
-            'secureDevice', []);
+            'secureDevice',
+            []
+        );
+    },
 
+    clear: function (success, error) {
+        _executeNativeMethod(
+            success,
+            error,
+            'clear',
+            []
+        );
+    },
+
+    _fetch: function (success, error, key) {
+        _executeNativeMethod(
+            function (value) {
+                success(value);
+            },
+            error,
+            'fetch',
+            ['_SS_' + key]
+        );
     },
 
     _sjcl_get: function (success, error, key) {
-        var payload, encAESKey;
-
+        var payload;
         try {
-            payload = this._get_payload(key);
-            encAESKey = payload.key;
             _executeNativeMethod(
-                function (AESKey) {
-                    var value, AESKeyBits;
-                    try {
-                        AESKeyBits = sjcl_ss.codec.base64.toBits(AESKey);
-                        value = sjcl_ss.decrypt(AESKeyBits, payload.value);
-                        success(value);
-                    } catch (e) {
-                        error(e);
-                    }
+                function (value) {
+                    payload = JSON.parse(value);
+                    _executeNativeMethod(
+                        function (AESKey) {
+                            var value, AESKeyBits;
+                            try {
+                                AESKeyBits = sjcl_ss.codec.base64.toBits(AESKey);
+                                value = sjcl_ss.decrypt(AESKeyBits, payload.value);
+                                success(value);
+                            } catch (e) {
+                                error(e);
+                            }
+                        },
+                        error,
+                        'decrypt_rsa',
+                        [payload.key]
+                    );
                 },
                 error,
-                'decrypt_rsa',
-                [encAESKey]
+                'fetch',
+                ['_SS_' + key]
             );
+
         } catch (e) {
             error(e);
         }
@@ -199,8 +259,14 @@ SecureStorageAndroid.prototype = {
             // Encrypt the AES key
             _executeNativeMethod(
                 function (encKey) {
-                    localStorage.setItem('_SS_' + key, JSON.stringify({key: encKey, value: encValue}));
-                    success(key);
+                    _executeNativeMethod(
+                        function () {
+                            success(key);
+                        },
+                        error,
+                        'store',
+                        ['_SS_' + key, JSON.stringify({key: encKey, value: encValue})]
+                    );
                 },
                 error,
                 'encrypt_rsa',
@@ -212,101 +278,154 @@ SecureStorageAndroid.prototype = {
     },
 
     _native_get: function (success, error, key) {
-        var payload, AESkey, value;
-
-        try {
-            payload = this._get_payload(key);
-            AESkey = payload.key;
-            value = payload.value;
-            _executeNativeMethod(
-                success,
-                error,
-                'decrypt',
-                [AESkey, value.ct, value.iv, value.adata]
-            );
-        } catch (e) {
-            error(e);
-        }
+        _executeNativeMethod(
+            success,
+            error,
+            'get',
+            ['_SS_' + key]
+        );
     },
 
     _native_set: function (success, error, key, value) {
-        try {
-            _executeNativeMethod(
-                function (result) {
-                    localStorage.setItem('_SS_' + key, JSON.stringify(result));
-                    success(key);
-                },
-                error,
-                'encrypt',
-                [value, this.service]
-            );
-        } catch (e) {
-            error(e);
-        }
+        _executeNativeMethod(
+            function () {
+                success(key);
+            },
+            error,
+            'set',
+            ['_SS_' + key, value, this.service]
+        );
     },
 
-    _get_payload: function (key) {
-        var payload = localStorage.getItem('_SS_' + key);
-
-        if (!payload) {
-            throw new Error('Key "' + key + '" not found.');
-        }
-        return JSON.parse(payload);
-    },
-
-    _migrate_to_native: function (success) {
-        var keysLeft, payload, i, key, migrated, sjcl_get_success, sjcl_get_error;
-        var self = this;
-        var migrateKeys = [];
+    _migrate_to_native_storage: function (success) {
+        var key;
+        var secureStorageData = [];
+        var entriesCnt;
+        var entriesProcessed = 0;
+        var entryMigrated;
+        var migrated;
+        var migrateEntry;
 
         migrated = function () {
-            localStorage.setItem('_SS_MIGRATED_TO_NATIVE', '1');
-            success();
+            _executeNativeMethod(
+                function () {
+                    success();
+                },
+                function () {
+                },
+                'store',
+                ['_SS_MIGRATED_TO_NATIVE_STORAGE', '1']
+            );
+        };
+
+        entryMigrated = function () {
+            entriesProcessed++;
+            if (entriesProcessed === entriesCnt) {
+                migrated();
+            }
+        };
+
+        migrateEntry = function (key, value) {
+            _executeNativeMethod(
+                function () {
+                    localStorage.removeItem(key);
+                    entryMigrated();
+                },
+                function () {
+                },
+                'store',
+                [key, value]
+            );
         };
 
         for (key in localStorage) {
-            if (localStorage.hasOwnProperty(key)) {
-                if (key.startsWith('_SS_')) {
-                    payload = JSON.parse(localStorage.getItem(key));
-                    //Just in case init was interrupted and rerun
-                    if (!payload.native) {
-                        migrateKeys.push(key.replace('_SS_', ''));
-                    }
-                }
+            if (localStorage.hasOwnProperty(key) && key.startsWith('_SS_')) {
+                secureStorageData[key] = localStorage.getItem(key);
             }
         }
-
-        if (migrateKeys.length === 0) {
+        entriesCnt = secureStorageData.length;
+        if (entriesCnt === 0) {
             migrated();
-            return;
         }
+        for (key in secureStorageData) {
+            migrateEntry(key, secureStorageData[key]);
+        }
+    },
 
-        sjcl_get_success = function (value) {
-            self._native_set(
-                function (key) {
-                    //Remove processed key
-                    keysLeft.splice(keysLeft.indexOf(key), 1);
-                    if (keysLeft.length === 0) {
-                        migrated();
-                    }
+    _migrate_to_native_aes: function (success) {
+        var self = this;
+        var keysCnt, keysProcessed, key;
+        var keyProcessed;
+        var migrated;
+        var migrateKey;
+
+        migrated = function () {
+            _executeNativeMethod(
+                function () {
+                    success();
                 },
-                function () {},
-                key,
-                value
+                function () {
+                },
+                'store',
+                ['_SS_MIGRATED_TO_NATIVE', '1']
             );
         };
 
-        sjcl_get_error = function () {};
+        keyProcessed = function () {
+            keysProcessed++;
+            if (keysProcessed === keysCnt) {
+                migrated();
+            }
+        };
 
-        keysLeft = migrateKeys.slice();
-        for (i = 0; i < migrateKeys.length; i++) {
-            key = migrateKeys[i];
-            this._sjcl_get(
-                sjcl_get_success,
-                sjcl_get_error,
-                key
+        migrateKey = function (key) {
+            var payload;
+            _executeNativeMethod(
+                function (value) {
+                    payload = JSON.parse(value);
+                    if (!payload.native) {
+                        self._sjcl_get(
+                            function (value) {
+                                self._native_set(
+                                    function () {
+                                        keyProcessed();
+                                    },
+                                    function () {},
+                                    key.replace('_SS_', ''),
+                                    value
+                                );
+                            },
+                            function () {},
+                            key.replace('_SS_', '')
+                        );
+                    } else {
+                        keyProcessed();
+                    }
+                },
+                function () {
+                },
+                'fetch',
+                [key]
             );
-        }
+        };
+
+        _executeNativeMethod(
+            function (keys) {
+                keysProcessed = 0;
+                keysCnt = keys.length;
+                if (keysCnt === 0) {
+                    migrated();
+                } else {
+                    for (key in keys) {
+                        migrateKey(keys[key]);
+                    }
+                }
+            },
+            function () {
+            },
+            'keys',
+            []
+        );
     }
 };
 
