@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.5.1 - 2016-09-12
+------------------
+
+- Fix migration to SharedPreferences error in certain android phones.
+  [ggozad]
+
 2.5.0 - 2016-09-12
 ------------------
 

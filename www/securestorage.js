@@ -339,7 +339,7 @@ SecureStorageAndroid.prototype = {
         };
 
         for (key in localStorage) {
-            if (localStorage.hasOwnProperty(key) && key.startsWith('_SS_')) {
+            if (localStorage.hasOwnProperty(key) && key.indexOf('_SS_') === 0) {
                 secureStorageData[key] = localStorage.getItem(key);
             }
         }
