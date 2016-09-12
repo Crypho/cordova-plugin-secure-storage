@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-secure-storage"
-    version="2.4.2">
+    version="2.5.0">
 
     <name>SecureStorage</name>
     <author>Crypho AS</author>
@@ -57,6 +57,7 @@
         <source-file src="src/android/SecureStorage.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/RSA.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/AES.java" target-dir="src/com/crypho/plugins/" />
+        <source-file src="src/android/SharedPreferencesHandler.java" target-dir="src/com/crypho/plugins/" />
     </platform>
 
     <platform name="browser">
