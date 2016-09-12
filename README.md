@@ -123,7 +123,7 @@ On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureS
 * A random 256-bit AES key is generated.
 * The AES key encrypts the value.
 * The AES key is encrypted with a device-generated RSA (RSA/ECB/PKCS1Padding) from the Android KeyStore.
-* The combination of the encrypted AES key and value are stored in ``localStorage``.
+* The combination of the encrypted AES key and value are stored in ``SharedPreferences``.
 
 The inverse process is followed on ``get``.
 
