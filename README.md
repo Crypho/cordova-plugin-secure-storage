@@ -166,6 +166,12 @@ _init();
 
 ```
 
+##### Android keystore deletion on security setting change
+
+Changing the lock screen type on Android erases the keystore (issues [61989](https://code.google.com/p/android/issues/detail?id=61989) and [210402](https://code.google.com/p/android/issues/detail?id=210402)). This is also described in the [Android Security: The Forgetful Keystore](https://doridori.github.io/android-security-the-forgetful-keystore/) blog post.
+
+This means that any values saved using the plugin could be lost if the user changes security settings. The plugin should therefore be used as a secure credential cache and not persistent storage on Android.
+
 #### Windows
 Windows implementation is based on [PasswordVault](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.passwordvault.aspx) object from the [Windows.Security.Credentials](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.aspx) namespace.
 The contents of the locker are specific to the app so different apps and services don't have access to credentials associated with other apps or services.
