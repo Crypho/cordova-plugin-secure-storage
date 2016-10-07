@@ -101,7 +101,6 @@ SecureStorageWindows = SecureStorageiOS;
 
 SecureStorageAndroid = function (success, error, service, options) {
     var self = this;
-
     if (options) {
         this.options = _merge_options(this.options, options);
     }
@@ -348,16 +347,19 @@ SecureStorageAndroid.prototype = {
             migrated();
         }
         for (key in secureStorageData) {
-            migrateEntry(key, secureStorageData[key]);
+            if (secureStorageData.hasOwnProperty(key)) {
+                migrateEntry(key, secureStorageData[key]);
+            }
         }
     },
 
     _migrate_to_native_aes: function (success) {
         var self = this;
-        var keysCnt, keysProcessed, key;
+        var keysCnt, keysProcessed;
         var keyProcessed;
         var migrated;
         var migrateKey;
+        var i;
 
         migrated = function () {
             _executeNativeMethod(
@@ -416,8 +418,8 @@ SecureStorageAndroid.prototype = {
                 if (keysCnt === 0) {
                     migrated();
                 } else {
-                    for (key in keys) {
-                        migrateKey(keys[key]);
+                    for (i = 0; i < keysCnt; i++) {
+                        migrateKey(keys[i]);
                     }
                 }
             },
