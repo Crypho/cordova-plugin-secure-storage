@@ -100,6 +100,14 @@ SecureStorageiOS.prototype = {
         } catch (e) {
             error(e);
         }
+    },
+
+    clear: function (success, error) {
+        try {
+            _executeNativeMethod(success, error, 'clear', [this.service]);
+        } catch (e) {
+            error(e);
+        }
     }
 };
 
