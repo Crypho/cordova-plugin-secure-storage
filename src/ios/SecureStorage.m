@@ -127,6 +127,39 @@
     }];
 }
 
+- (void)clear:(CDVInvokedUrlCommand*)command
+{
+    NSString *service = [command argumentAtIndex:0];
+    [self.commandDelegate runInBackground:^{
+        NSError *error;
+
+        SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+        query.service = service;
+
+        NSArray *accounts = [query fetchAll:&error];
+        if (accounts) {
+            for (id dict in accounts) {
+                query.account = [dict valueForKeyPath:@"acct"];
+                if (![query deleteItem:&error]) {
+                    break;
+                }
+            }
+
+            if (!error) {
+                [self successWithMessage: nil : command.callbackId];
+            } else {
+                [self failWithMessage: @"Failure in SecureStorage.clear()" : error : command.callbackId];
+            }
+
+        } else if ([error code] == errSecItemNotFound) {
+            [self successWithMessage: nil : command.callbackId];
+        } else {
+            [self failWithMessage: @"Failure in SecureStorage.clear()" : error : command.callbackId];
+        }
+
+    }];
+}
+
 -(void)successWithMessage:(NSString *)message : (NSString *)callbackId
 {
         CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
