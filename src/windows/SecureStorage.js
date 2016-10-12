@@ -48,6 +48,36 @@ var SecureStorageProxy = {
             fail('Failure in SecureStorage.remove() - ' + e.message);
         }
     },
+    keys: function (win, fail, args) {
+        try {
+            var service = args[0];
+
+            var vault = new Windows.Security.Credentials.PasswordVault();
+            var passwordCredentials = vault.findAllByResource(service) || [];
+            passwordCredentials = passwordCredentials.map(function (passwordCredential) {
+                return passwordCredential.userName;
+            });
+
+            win(passwordCredentials);
+        } catch (e) {
+            fail('Failure in SecureStorage.keys() - ' + e.message);
+        }
+    },
+    clear: function (win, fail, args) {
+        try {
+            var service = args[0];
+
+            var vault = new Windows.Security.Credentials.PasswordVault();
+            var passwordCredentials = vault.findAllByResource(service) || [];
+            passwordCredentials.forEach(function (passwordCredential) {
+                vault.remove(passwordCredential);
+            });
+
+            win();
+        } catch (e) {
+            fail('Failure in SecureStorage.clear() - ' + e.message);
+        }
+    },
 };
 
 require("cordova/exec/proxy").add("SecureStorage", SecureStorageProxy);
