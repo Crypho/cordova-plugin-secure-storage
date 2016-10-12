@@ -176,6 +176,23 @@ SecureStorageAndroid.prototype = {
         }
     },
 
+    keys: function (success, error) {
+        _executeNativeMethod(
+            function (ret) {
+                var i, len = ret.length, keys = [];
+                for (i = 0; i < len; ++i) {
+                    if (ret[i] && ret[i].slice(0, 4) === '_SS_') {
+                        keys.push(ret[i].slice(4));
+                    }
+                }
+                success(keys);
+            },
+            error,
+            'keys',
+            []
+        );
+    },
+
     remove: function (success, error, key) {
         _executeNativeMethod(
             function () {
