@@ -496,9 +496,43 @@ SecureStorageBrowser.prototype = {
             error(e);
         }
     },
+
     remove: function (success, error, key) {
         localStorage.removeItem('_SS_' + key);
         success(key);
+    },
+
+    keys: function (success, error) {
+        var i, len, key, keys = [];
+        try {
+            _checkCallbacks(success, error);
+            for (i = 0, len = localStorage.length; i < len; ++i) {
+                key = localStorage.key(i);
+                if ('_SS_' === key.slice(0, 4)) {
+                    keys.push(key.slice(4));
+                }
+            }
+            success(keys);
+        } catch (e) {
+            error(e);
+        }
+    },
+
+    clear: function (success, error) {
+        var i, key;
+        try {
+            _checkCallbacks(success, error);
+            i = localStorage.length;
+            while (i-- > 0) {
+                key = localStorage.key(i);
+                if (key && '_SS_' === key.slice(0, 4)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            success();
+        } catch (e) {
+            error(e);
+        }
     }
 };
 
