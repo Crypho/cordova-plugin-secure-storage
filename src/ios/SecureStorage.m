@@ -100,6 +100,33 @@
     }];
 }
 
+- (void)keys:(CDVInvokedUrlCommand*)command
+{
+    NSString *service = [command argumentAtIndex:0];
+    [self.commandDelegate runInBackground:^{
+        NSError *error;
+
+        SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+        query.service = service;
+
+        NSArray *accounts = [query fetchAll:&error];
+        if (accounts) {
+            NSMutableArray *array = [NSMutableArray arrayWithCapacity:[accounts count]];
+            for (id dict in accounts) {
+                [array addObject:[dict valueForKeyPath:@"acct"]];
+            }
+
+            CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:array];
+            [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
+        } else if ([error code] == errSecItemNotFound) {
+            CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:[NSArray array]];
+            [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
+        } else {
+            [self failWithMessage: @"Failure in SecureStorage.keys()" : error : command.callbackId];
+        }
+    }];
+}
+
 -(void)successWithMessage:(NSString *)message : (NSString *)callbackId
 {
         CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
