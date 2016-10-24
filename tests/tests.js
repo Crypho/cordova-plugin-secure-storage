@@ -12,6 +12,12 @@ exports.defineAutoTests = function() {
             };
         });
 
+        afterEach(function (done) {
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.clear(done, handlers.errorHandler);
+            }, handlers.errorHandler, SERVICE);
+        });
+
         it('should be defined', function() {
             expect(cordova.plugins.SecureStorage).toBeDefined();
         });
@@ -55,17 +61,22 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
-        it('should be able to get a key/value that was set before', function (done) {
-            spyOn(handlers, 'successHandler').and.callFake(function (res) {
-                expect(res).toEqual('bar');
-                expect(handlers.errorHandler).not.toHaveBeenCalled();
-                done();
-            });
-            spyOn(handlers, 'errorHandler');
-
+        it('should be able to get a key/value that was set from a previous instance of SecureStorage', function (done) {
             ss = new cordova.plugins.SecureStorage(function () {
-                ss.get(handlers.successHandler, handlers.errorHandler, 'foo');
+                ss.set(function () {
+                    spyOn(handlers, 'successHandler').and.callFake(function (res) {
+                        expect(res).toEqual('bar');
+                        expect(handlers.errorHandler).not.toHaveBeenCalled();
+                        done();
+                    });
+                    spyOn(handlers, 'errorHandler');
+
+                    ss = new cordova.plugins.SecureStorage(function () {
+                        ss.get(handlers.successHandler, handlers.errorHandler, 'foo');
+                    }, handlers.errorHandler, SERVICE);
+                }, handlers.errorHandler, 'foo', 'bar');
             }, handlers.errorHandler, SERVICE);
+
         });
 
         it('should call the error handler when getting a key that does not exist', function (done) {
