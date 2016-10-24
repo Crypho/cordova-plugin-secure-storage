@@ -142,7 +142,7 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
-        it('should be able to get keys in an array', function (done){
+        it('should be able to get the storage keys as an array', function (done){
             spyOn(handlers, 'successHandler').and.callFake(function (res) {
                 expect(res).toEqual(jasmine.any(Array));
                 expect(res.indexOf('foo') >= 0).toBeTruthy();
@@ -158,7 +158,7 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
-        it('should be able to clear all keys', function (done){
+        it('should be able to clear the storage', function (done){
             spyOn(handlers, 'successHandler').and.callFake(function () {
                 expect(handlers.errorHandler).not.toHaveBeenCalled();
                 ss.keys(function(key) {
@@ -176,7 +176,7 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
-        it('should be able to get empty array keys when storage is empty', function (done){
+        it('should return [] when keys is called and the storage is empty', function (done){
             spyOn(handlers, 'successHandler').and.callFake(function (res) {
                 expect(res).toEqual(jasmine.any(Array));
                 expect(res.length).toBe(0);
@@ -192,7 +192,7 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
-        it('should be able to clear without error when storage is empty', function (done){
+        it('should be able to clear without error when the storage is empty', function (done){
             spyOn(handlers, 'successHandler').and.callFake(function () {
                 expect(handlers.errorHandler).not.toHaveBeenCalled();
                 ss.keys(function(key) {
@@ -297,7 +297,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
     var ss;
     if (cordova.platformId === 'android') {
         createActionButton('Init tests for android', function() {
-            alert('You should run these tests twice. Oncee without screen locking, and once with screen locking set to PIN. When lock is disabled you should be prompted to set it.');
+            alert('You should run these tests twice. Once without screen locking, and once with screen locking set to PIN. When lock is disabled you should be prompted to set it.');
             ss = new cordova.plugins.SecureStorage(
                 function () {
                     alert('Init successfull.');
