@@ -119,7 +119,9 @@ exports.defineAutoTests = function() {
             spyOn(handlers, 'errorHandler');
 
             ss = new cordova.plugins.SecureStorage(function () {
-                ss.remove(handlers.successHandler, handlers.errorHandler, 'foo');
+                ss.set(function () {
+                    ss.remove(handlers.successHandler, handlers.errorHandler, 'foo');
+                }, handlers.errorHandler, 'foo', 'bar');
             }, handlers.errorHandler, SERVICE);
         });
 
