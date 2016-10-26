@@ -1,4 +1,5 @@
 var SecureStorageProxy = {
+
     get: function (win, fail, args) {
         try {
             var service = args[0];
@@ -12,6 +13,7 @@ var SecureStorageProxy = {
             fail('Failure in SecureStorage.get() - ' + e.message);
         }
     },
+
     set: function (win, fail, args) {
         try {
             var service = args[0];
@@ -31,6 +33,7 @@ var SecureStorageProxy = {
             fail('Failure in SecureStorage.set() - ' + e.message);
         }
     },
+
     remove: function (win, fail, args) {
         try {
             var service = args[0];
@@ -46,6 +49,48 @@ var SecureStorageProxy = {
             win(key);
         } catch (e) {
             fail('Failure in SecureStorage.remove() - ' + e.message);
+        }
+    },
+
+    keys: function (win, fail, args) {
+        try {
+            var service = args[0];
+            var vault = new Windows.Security.Credentials.PasswordVault();
+            var passwordCredentials;
+
+            try {
+                passwordCredentials = vault.findAllByResource(service);
+            } catch (e) {
+                passwordCredentials = [];
+            }
+            passwordCredentials = passwordCredentials.map(function (passwordCredential) {
+                return passwordCredential.userName;
+            });
+
+            win(passwordCredentials);
+        } catch (e) {
+            fail('Failure in SecureStorage.keys() - ' + e.message);
+        }
+    },
+
+    clear: function (win, fail, args) {
+        try {
+            var service = args[0];
+            var vault = new Windows.Security.Credentials.PasswordVault();
+            var passwordCredentials;
+
+            try {
+                passwordCredentials = vault.findAllByResource(service);
+            } catch (e) {
+                passwordCredentials = [];
+            }
+            passwordCredentials.forEach(function (passwordCredential) {
+                vault.remove(passwordCredential);
+            });
+
+            win();
+        } catch (e) {
+            fail('Failure in SecureStorage.clear() - ' + e.message);
         }
     },
 };

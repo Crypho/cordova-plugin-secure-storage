@@ -12,6 +12,12 @@ exports.defineAutoTests = function() {
             };
         });
 
+        afterEach(function (done) {
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.clear(done, handlers.errorHandler);
+            }, handlers.errorHandler, SERVICE);
+        });
+
         it('should be defined', function() {
             expect(cordova.plugins.SecureStorage).toBeDefined();
         });
@@ -55,17 +61,22 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
-        it('should be able to get a key/value that was set before', function (done) {
-            spyOn(handlers, 'successHandler').and.callFake(function (res) {
-                expect(res).toEqual('bar');
-                expect(handlers.errorHandler).not.toHaveBeenCalled();
-                done();
-            });
-            spyOn(handlers, 'errorHandler');
-
+        it('should be able to get a key/value that was set from a previous instance of SecureStorage', function (done) {
             ss = new cordova.plugins.SecureStorage(function () {
-                ss.get(handlers.successHandler, handlers.errorHandler, 'foo');
+                ss.set(function () {
+                    spyOn(handlers, 'successHandler').and.callFake(function (res) {
+                        expect(res).toEqual('bar');
+                        expect(handlers.errorHandler).not.toHaveBeenCalled();
+                        done();
+                    });
+                    spyOn(handlers, 'errorHandler');
+
+                    ss = new cordova.plugins.SecureStorage(function () {
+                        ss.get(handlers.successHandler, handlers.errorHandler, 'foo');
+                    }, handlers.errorHandler, SERVICE);
+                }, handlers.errorHandler, 'foo', 'bar');
             }, handlers.errorHandler, SERVICE);
+
         });
 
         it('should call the error handler when getting a key that does not exist', function (done) {
@@ -108,7 +119,9 @@ exports.defineAutoTests = function() {
             spyOn(handlers, 'errorHandler');
 
             ss = new cordova.plugins.SecureStorage(function () {
-                ss.remove(handlers.successHandler, handlers.errorHandler, 'foo');
+                ss.set(function () {
+                    ss.remove(handlers.successHandler, handlers.errorHandler, 'foo');
+                }, handlers.errorHandler, 'foo', 'bar');
             }, handlers.errorHandler, SERVICE);
         });
 
@@ -128,7 +141,75 @@ exports.defineAutoTests = function() {
                         ss.get(handlers.successHandler, handlers.errorHandler, 'bar');
                     }, function () {}, 'bar', 'bar');
                 }, function () {}, 'foo', 'foo');
-            }, handlers.errorHandler, 'testing');
+            }, handlers.errorHandler, SERVICE);
+        });
+
+        it('should be able to get the storage keys as an array', function (done){
+            spyOn(handlers, 'successHandler').and.callFake(function (res) {
+                expect(res).toEqual(jasmine.any(Array));
+                expect(res.indexOf('foo') >= 0).toBeTruthy();
+                expect(handlers.errorHandler).not.toHaveBeenCalled();
+                done();
+            });
+            spyOn(handlers, 'errorHandler');
+
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.set(function () {
+                    ss.keys(handlers.successHandler, handlers.errorHandler);
+                }, done.fail, 'foo', 'foo');
+            }, handlers.errorHandler, SERVICE);
+        });
+
+        it('should be able to clear the storage', function (done){
+            spyOn(handlers, 'successHandler').and.callFake(function () {
+                expect(handlers.errorHandler).not.toHaveBeenCalled();
+                ss.keys(function(key) {
+                    expect(key).toEqual(jasmine.any(Array));
+                    expect(key.length).toBe(0);
+                    done();
+                }, done.fail);
+            });
+            spyOn(handlers, 'errorHandler');
+
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.set(function () {
+                    ss.clear(handlers.successHandler, handlers.errorHandler);
+                }, done.fail, 'foo', 'foo');
+            }, handlers.errorHandler, SERVICE);
+        });
+
+        it('should return [] when keys is called and the storage is empty', function (done){
+            spyOn(handlers, 'successHandler').and.callFake(function (res) {
+                expect(res).toEqual(jasmine.any(Array));
+                expect(res.length).toBe(0);
+                expect(handlers.errorHandler).not.toHaveBeenCalled();
+                done();
+            });
+            spyOn(handlers, 'errorHandler');
+
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.clear(function () {
+                    ss.keys(handlers.successHandler, handlers.errorHandler);
+                }, handlers.errorHandler);
+            }, handlers.errorHandler, SERVICE);
+        });
+
+        it('should be able to clear without error when the storage is empty', function (done){
+            spyOn(handlers, 'successHandler').and.callFake(function () {
+                expect(handlers.errorHandler).not.toHaveBeenCalled();
+                ss.keys(function(key) {
+                    expect(key).toEqual(jasmine.any(Array));
+                    expect(key.length).toBe(0);
+                    done();
+                }, done.fail);
+            });
+            spyOn(handlers, 'errorHandler');
+
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.set(function () {
+                    ss.clear(handlers.successHandler, handlers.errorHandler);
+                }, function () {}, 'foo', 'foo');
+            }, handlers.errorHandler, SERVICE);
         });
     });
 
@@ -218,7 +299,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
     var ss;
     if (cordova.platformId === 'android') {
         createActionButton('Init tests for android', function() {
-            alert('You should run these tests twice. Oncee without screen locking, and once with screen locking set to PIN. When lock is disabled you should be prompted to set it.');
+            alert('You should run these tests twice. Once without screen locking, and once with screen locking set to PIN. When lock is disabled you should be prompted to set it.');
             ss = new cordova.plugins.SecureStorage(
                 function () {
                     alert('Init successfull.');

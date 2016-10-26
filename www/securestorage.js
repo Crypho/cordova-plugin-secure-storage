@@ -92,6 +92,22 @@ SecureStorageiOS.prototype = {
         } catch (e) {
             error(e);
         }
+    },
+
+    keys: function (success, error) {
+        try {
+            _executeNativeMethod(success, error, 'keys', [this.service]);
+        } catch (e) {
+            error(e);
+        }
+    },
+
+    clear: function (success, error) {
+        try {
+            _executeNativeMethod(success, error, 'clear', [this.service]);
+        } catch (e) {
+            error(e);
+        }
     }
 };
 
@@ -174,6 +190,23 @@ SecureStorageAndroid.prototype = {
         } else {
             this._sjcl_set(success, error, key, value);
         }
+    },
+
+    keys: function (success, error) {
+        _executeNativeMethod(
+            function (ret) {
+                var i, len = ret.length, keys = [];
+                for (i = 0; i < len; ++i) {
+                    if (ret[i] && ret[i].slice(0, 4) === '_SS_') {
+                        keys.push(ret[i].slice(4));
+                    }
+                }
+                success(keys);
+            },
+            error,
+            'keys',
+            []
+        );
     },
 
     remove: function (success, error, key) {
@@ -463,9 +496,43 @@ SecureStorageBrowser.prototype = {
             error(e);
         }
     },
+
     remove: function (success, error, key) {
         localStorage.removeItem('_SS_' + key);
         success(key);
+    },
+
+    keys: function (success, error) {
+        var i, len, key, keys = [];
+        try {
+            _checkCallbacks(success, error);
+            for (i = 0, len = localStorage.length; i < len; ++i) {
+                key = localStorage.key(i);
+                if ('_SS_' === key.slice(0, 4)) {
+                    keys.push(key.slice(4));
+                }
+            }
+            success(keys);
+        } catch (e) {
+            error(e);
+        }
+    },
+
+    clear: function (success, error) {
+        var i, key;
+        try {
+            _checkCallbacks(success, error);
+            i = localStorage.length;
+            while (i-- > 0) {
+                key = localStorage.key(i);
+                if (key && '_SS_' === key.slice(0, 4)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            success();
+        } catch (e) {
+            error(e);
+        }
     }
 };
 
