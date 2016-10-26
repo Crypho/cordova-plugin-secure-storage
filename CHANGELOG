@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.6.0 - 2016-10-26
+------------------
+
+- Introduce keys(), clear() methods.
+  [yyfearth, demetris-manikas, ggozad]
+
 2.5.2 - 2016-10-11
 ------------------
 
