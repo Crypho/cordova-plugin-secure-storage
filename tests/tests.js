@@ -109,6 +109,18 @@ exports.defineAutoTests = function() {
             }, handlers.errorHandler, SERVICE);
         });
 
+        it('should call the error handler when setting a value that is not a string', function (done) {
+            spyOn(handlers, 'errorHandler').and.callFake(function () {
+                expect(handlers.successHandler).not.toHaveBeenCalled();
+                done();
+            });
+            spyOn(handlers, 'successHandler');
+
+            ss = new cordova.plugins.SecureStorage(function () {
+                ss.get(handlers.successHandler, handlers.errorHandler, {'foo': 'bar'});
+            }, handlers.errorHandler, SERVICE);
+        });
+
 
         it('should be able to remove a key/value', function (done) {
             spyOn(handlers, 'successHandler').and.callFake(function (res) {

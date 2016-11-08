@@ -16,6 +16,17 @@ var _checkCallbacks = function (success, error) {
     }
 };
 
+//Taken from undescore.js
+var _isString = function isString(x) {
+    return Object.prototype.toString.call(x) === '[object String]';
+};
+
+var _checkIsString = function(value){
+    if (!_isString(value)) {
+        throw new Error('Value is not a String');
+    }
+};
+
 var _merge_options = function (defaults, options){
     var res = {};
     var attrname;
@@ -56,7 +67,7 @@ var _executeNativeMethod = function (success, error, nativeMethodName, args) {
             error(new Error('Error occured while executing native method.'));
         } else {
             // wrap string to Error instance if necessary
-            error(typeof err === 'string' ? new Error(err) : err);
+            error(_isString(err) ? new Error(err) : err);
         }
     };
 
@@ -80,6 +91,7 @@ SecureStorageiOS.prototype = {
 
     set: function (success, error, key, value) {
         try {
+            _checkIsString(value);
             _executeNativeMethod(success, error, 'set', [this.service, key, value]);
         } catch (e) {
             error(e);
@@ -177,65 +189,90 @@ SecureStorageAndroid.prototype = {
     },
 
     get: function (success, error, key) {
-        if (this.options.native) {
-            this._native_get(success, error, key);
-        } else {
-            this._sjcl_get(success, error, key);
+        try {
+            if (this.options.native) {
+                this._native_get(success, error, key);
+            } else {
+                this._sjcl_get(success, error, key);
+            }
+        } catch (e) {
+            error(e);
         }
     },
 
     set: function (success, error, key, value) {
-        if (this.options.native) {
-            this._native_set(success, error, key, value);
-        } else {
-            this._sjcl_set(success, error, key, value);
+        try {
+            _checkIsString(value);
+            if (this.options.native) {
+                this._native_set(success, error, key, value);
+            } else {
+                this._sjcl_set(success, error, key, value);
+            }
+        } catch (e) {
+            error(e);
         }
     },
 
     keys: function (success, error) {
-        _executeNativeMethod(
-            function (ret) {
-                var i, len = ret.length, keys = [];
-                for (i = 0; i < len; ++i) {
-                    if (ret[i] && ret[i].slice(0, 4) === '_SS_') {
-                        keys.push(ret[i].slice(4));
+        try {
+            _executeNativeMethod(
+                function (ret) {
+                    var i, len = ret.length, keys = [];
+                    for (i = 0; i < len; ++i) {
+                        if (ret[i] && ret[i].slice(0, 4) === '_SS_') {
+                            keys.push(ret[i].slice(4));
+                        }
                     }
-                }
-                success(keys);
-            },
-            error,
-            'keys',
-            []
-        );
+                    success(keys);
+                },
+                error,
+                'keys',
+                []
+            );
+        } catch (e) {
+            error(e);
+        }
     },
 
     remove: function (success, error, key) {
-        _executeNativeMethod(
-            function () {
-                success(key);
-            },
-            error,
-            'remove',
-            ['_SS_' + key]
-        );
+        try {
+            _executeNativeMethod(
+                function () {
+                    success(key);
+                },
+                error,
+                'remove',
+                ['_SS_' + key]
+            );
+        } catch (e) {
+            error(e);
+        }
     },
 
     secureDevice: function (success, error) {
-        _executeNativeMethod(
-            success,
-            error,
-            'secureDevice',
-            []
-        );
+        try {
+            _executeNativeMethod(
+                success,
+                error,
+                'secureDevice',
+                []
+            );
+        } catch (e) {
+            error(e);
+        }
     },
 
     clear: function (success, error) {
-        _executeNativeMethod(
-            success,
-            error,
-            'clear',
-            []
-        );
+        try {
+            _executeNativeMethod(
+                success,
+                error,
+                'clear',
+                []
+            );
+        } catch (e) {
+            error(e);
+        }
     },
 
     _fetch: function (success, error, key) {
@@ -251,62 +288,53 @@ SecureStorageAndroid.prototype = {
 
     _sjcl_get: function (success, error, key) {
         var payload;
-        try {
-            _executeNativeMethod(
-                function (value) {
-                    payload = JSON.parse(value);
-                    _executeNativeMethod(
-                        function (AESKey) {
-                            var value, AESKeyBits;
-                            try {
-                                AESKeyBits = sjcl_ss.codec.base64.toBits(AESKey);
-                                value = sjcl_ss.decrypt(AESKeyBits, payload.value);
-                                success(value);
-                            } catch (e) {
-                                error(e);
-                            }
-                        },
-                        error,
-                        'decrypt_rsa',
-                        [payload.key]
-                    );
-                },
-                error,
-                'fetch',
-                ['_SS_' + key]
-            );
-
-        } catch (e) {
-            error(e);
-        }
+        _executeNativeMethod(
+            function (value) {
+                payload = JSON.parse(value);
+                _executeNativeMethod(
+                    function (AESKey) {
+                        var value, AESKeyBits;
+                        try {
+                            AESKeyBits = sjcl_ss.codec.base64.toBits(AESKey);
+                            value = sjcl_ss.decrypt(AESKeyBits, payload.value);
+                            success(value);
+                        } catch (e) {
+                            error(e);
+                        }
+                    },
+                    error,
+                    'decrypt_rsa',
+                    [payload.key]
+                );
+            },
+            error,
+            'fetch',
+            ['_SS_' + key]
+        );
     },
 
     _sjcl_set: function (success, error, key, value) {
         var AESKey, encValue;
 
-        try {
-            AESKey = sjcl_ss.random.randomWords(8);
-            _AES_PARAM.adata = this.service;
-            encValue = sjcl_ss.encrypt(AESKey, value, _AES_PARAM);
-            // Encrypt the AES key
-            _executeNativeMethod(
-                function (encKey) {
-                    _executeNativeMethod(
-                        function () {
-                            success(key);
-                        },
-                        error,
-                        'store',
-                        ['_SS_' + key, JSON.stringify({key: encKey, value: encValue})]
-                    );
-                },
-                error,
-                'encrypt_rsa',
-                [sjcl_ss.codec.base64.fromBits(AESKey)]
-            );
-        } catch (e) {
-            error(e);
-        }
+        AESKey = sjcl_ss.random.randomWords(8);
+        _AES_PARAM.adata = this.service;
+        encValue = sjcl_ss.encrypt(AESKey, value, _AES_PARAM);
+        // Encrypt the AES key
+        _executeNativeMethod(
+            function (encKey) {
+                _executeNativeMethod(
+                    function () {
+                        success(key);
+                    },
+                    error,
+                    'store',
+                    ['_SS_' + key, JSON.stringify({key: encKey, value: encValue})]
+                );
+            },
+            error,
+            'encrypt_rsa',
+            [sjcl_ss.codec.base64.fromBits(AESKey)]
+        );
     },
 
     _native_get: function (success, error, key) {
@@ -489,6 +517,7 @@ SecureStorageBrowser.prototype = {
 
     set: function (success, error, key, value) {
         try {
+            _checkIsString(value);
             _checkCallbacks(success, error);
             localStorage.setItem('_SS_' + key, value);
             success(key);
