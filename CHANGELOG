@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.6.1 -
+------------------
+
+- Make sure only string values are stored.
+  [demetris-manikas]
+
 2.6.0 - 2016-10-26
 ------------------
 
