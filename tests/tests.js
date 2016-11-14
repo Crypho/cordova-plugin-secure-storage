@@ -223,6 +223,58 @@ exports.defineAutoTests = function() {
                 }, function () {}, 'foo', 'foo');
             }, handlers.errorHandler, SERVICE);
         });
+
+        it('should be able to handle simultaneous sets and gets', function (done) {
+            spyOn(handlers, 'errorHandler');
+
+            var count = 0,
+                total = 3,
+                i, values = {};
+
+            for (i=0 ; i < total ; i++) {
+                values[i] = i.toString();
+            }
+
+            function decrypt() {
+                count = 0;
+                for (i = 0 ; i < total; i++) {
+                    ss.get(
+                        function (res) {
+                            count ++;
+                            if (count == total) {
+                                expect(handlers.errorHandler).not.toHaveBeenCalled();
+                                done();
+                            }
+                        },
+                        handlers.errorHandler,
+                        i.toString()
+                    );
+                }
+
+            }
+
+            function encrypt() {
+                count = 0;
+                for (i = 0 ; i < total; i++) {
+                    ss.set(
+                        function () {
+                            count ++;
+                            if (count == total) {
+                                decrypt();
+                            }
+                        },
+                        handlers.errorHandler,
+                        i.toString(), values[i]
+                    );
+                }
+            }
+
+            ss = new cordova.plugins.SecureStorage(function () {
+                encrypt();
+            }, handlers.errorHandler, SERVICE);
+
+        });
+
     });
 
     if (cordova.platformId === 'android') {
