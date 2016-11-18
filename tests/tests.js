@@ -228,7 +228,7 @@ exports.defineAutoTests = function() {
             spyOn(handlers, 'errorHandler');
 
             var count = 0,
-                total = 3,
+                total = 5,
                 i, values = {};
 
             for (i=0 ; i < total ; i++) {

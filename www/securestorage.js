@@ -129,6 +129,9 @@ SecureStorageWindows = SecureStorageiOS;
 
 SecureStorageAndroid = function (success, error, service, options) {
     var self = this;
+    this._queue = [];
+    this.running = false;
+
     if (options) {
         this.options = _merge_options(this.options, options);
     }
@@ -188,17 +191,49 @@ SecureStorageAndroid.prototype = {
         migrateLocalStorage: false
     },
 
+    // For android we queue decryption so that only one
+    // happens at a time. This seems essential on certain combos
+    // of android phones for Android > 6.0.0
+    // XXX: Revisit in the future and fix in the android stack.
     get: function (success, error, key) {
-        try {
-            if (this.options.native) {
-                this._native_get(success, error, key);
-            } else {
-                this._sjcl_get(success, error, key);
+        var self = this;
+
+        var successCallback = function (res) {
+            success(res);
+            self._dequeue();
+        };
+
+        var errorCallback = function (err) {
+            error(err);
+            self._dequeue();
+        };
+
+        this._queue.push(function () {
+            try {
+                if (self.options.native) {
+                    self._native_get(successCallback, errorCallback, key);
+                } else {
+                    self._sjcl_get(successCallback, errorCallback, key);
+                }
+            } catch (e) {
+                error(e);
             }
-        } catch (e) {
-            error(e);
+        });
+
+        if (!this.running) {
+            this._dequeue();
         }
     },
+
+    _dequeue: function () {
+        this.running = false;
+        var f = this._queue.shift();
+        if (f) {
+            this.running = true;
+            f();
+        }
+    },
+
 
     set: function (success, error, key, value) {
         try {
