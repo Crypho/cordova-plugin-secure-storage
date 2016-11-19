@@ -17,15 +17,19 @@ import javax.crypto.KeyGenerator;
 
 public class AES {
 	private static final String CIPHER_MODE = "CCM";
-	private static final String CIPHER = "AES/" + CIPHER_MODE + "/NoPadding";
 	private static final int KEY_SIZE = 256;
 	private static final int VERSION = 1;
+	private static final Cipher CIPHER = getCipher();
 
-	public static JSONObject encrypt(Cipher encKeyCipher, byte[] msg, byte[] adata) throws Exception {
-		SecretKeySpec secretKeySpec = generateKeySpec();
-		byte[] encryptedKey = encKeyCipher.doFinal(secretKeySpec.getEncoded());
-		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, secretKeySpec, null, adata);
-		byte[] iv = cipher.getIV();
+	public static JSONObject encrypt(byte[] msg, byte[] adata) throws Exception {
+		byte[] iv, ct, secretKeySpec_enc;
+		synchronized (CIPHER) {
+			SecretKeySpec secretKeySpec = generateKeySpec();
+			secretKeySpec_enc = secretKeySpec.getEncoded();
+			initCipher(Cipher.ENCRYPT_MODE, secretKeySpec, null, adata);
+			iv = CIPHER.getIV();
+			ct = CIPHER.doFinal(msg);
+		}
 
 		JSONObject value = new JSONObject();
 		value.put("iv", Base64.encodeToString(iv, Base64.DEFAULT));
@@ -34,10 +38,10 @@ public class AES {
 		value.put("cipher", "AES");
 		value.put("mode", CIPHER_MODE);
 		value.put("adata", Base64.encodeToString(adata, Base64.DEFAULT));
-		value.put("ct", Base64.encodeToString(cipher.doFinal(msg), Base64.DEFAULT));
+		value.put("ct", Base64.encodeToString(ct, Base64.DEFAULT));
 
 		JSONObject result = new JSONObject();
-		result.put("key", Base64.encodeToString(encryptedKey, Base64.DEFAULT));
+		result.put("key", Base64.encodeToString(secretKeySpec_enc, Base64.DEFAULT));
 		result.put("value", value);
 		result.put("native", true);
 
@@ -46,8 +50,10 @@ public class AES {
 
 	public static String decrypt(byte[] buf, byte[] key, byte[] iv, byte[] adata) throws Exception {
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-		Cipher cipher = createCipher(Cipher.DECRYPT_MODE, secretKeySpec, iv, adata);
-		return new String(cipher.doFinal(buf));
+		synchronized (CIPHER) {
+			initCipher(Cipher.DECRYPT_MODE, secretKeySpec, iv, adata);
+			return new String(CIPHER.doFinal(buf));
+		}
 	}
 
 	private static SecretKeySpec generateKeySpec() throws Exception {
@@ -57,14 +63,20 @@ public class AES {
 	    return new SecretKeySpec(sc.getEncoded(), "AES");
 	}
 
-	private static Cipher createCipher(int cipherMode, Key key, byte[] iv, byte[] adata) throws Exception {
-		Cipher cipher = Cipher.getInstance(CIPHER);
+	private static void initCipher(int cipherMode, Key key, byte[] iv, byte[] adata) throws Exception {
 		if (iv != null) {
-			cipher.init(cipherMode, key, new IvParameterSpec(iv));
+			CIPHER.init(cipherMode, key, new IvParameterSpec(iv));
 		} else {
-			cipher.init(cipherMode, key);
+			CIPHER.init(cipherMode, key);
 		}
-		cipher.updateAAD(adata);
-		return cipher;
+		CIPHER.updateAAD(adata);
+	}
+
+	private static Cipher getCipher() {
+		try {
+			return Cipher.getInstance("AES/" + CIPHER_MODE + "/NoPadding");
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

@@ -225,44 +225,48 @@ exports.defineAutoTests = function() {
         });
 
         it('should be able to handle simultaneous sets and gets', function (done) {
-            spyOn(handlers, 'errorHandler');
-
             var count = 0,
                 total = 5,
+                decrypt_success, encrypt_success,
                 i, values = {};
+
+            spyOn(handlers, 'errorHandler');
 
             for (i=0 ; i < total ; i++) {
                 values[i] = i.toString();
             }
 
+            decrypt_success = function () {
+                count ++;
+                if (count === total) {
+                    expect(handlers.errorHandler).not.toHaveBeenCalled();
+                    done();
+                }
+            };
+
             function decrypt() {
                 count = 0;
                 for (i = 0 ; i < total; i++) {
                     ss.get(
-                        function (res) {
-                            count ++;
-                            if (count == total) {
-                                expect(handlers.errorHandler).not.toHaveBeenCalled();
-                                done();
-                            }
-                        },
+                        decrypt_success,
                         handlers.errorHandler,
                         i.toString()
                     );
                 }
-
             }
+
+            encrypt_success = function () {
+                count ++;
+                if (count === total) {
+                    decrypt();
+                }
+            };
 
             function encrypt() {
                 count = 0;
                 for (i = 0 ; i < total; i++) {
                     ss.set(
-                        function () {
-                            count ++;
-                            if (count == total) {
-                                decrypt();
-                            }
-                        },
+                        encrypt_success,
                         handlers.errorHandler,
                         i.toString(), values[i]
                     );

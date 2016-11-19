@@ -16,16 +16,20 @@ import javax.security.auth.x500.X500Principal;
 
 public class RSA {
 	private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
-	private static final String CIPHER = "RSA/ECB/PKCS1Padding";
+	private static final Cipher CIPHER = getCipher();
 
 	public static byte[] encrypt(byte[] buf, String alias) throws Exception {
-		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, alias);
-		return cipher.doFinal(buf);
+		synchronized (CIPHER) {
+			initCipher(Cipher.ENCRYPT_MODE, alias);
+			return CIPHER.doFinal(buf);
+		}
 	}
 
 	public static byte[] decrypt(byte[] encrypted, String alias) throws Exception {
-		Cipher cipher = createCipher(Cipher.DECRYPT_MODE, alias);
-		return cipher.doFinal(encrypted);
+		synchronized (CIPHER) {
+			initCipher(Cipher.DECRYPT_MODE, alias);
+			return CIPHER.doFinal(encrypted);
+		}
 	}
 
 	public static void createKeyPair(Context ctx, String alias) throws Exception {
@@ -48,7 +52,7 @@ public class RSA {
 		kpGenerator.generateKeyPair();
 	}
 
-	public static Cipher createCipher(int cipherMode, String alias) throws Exception {
+	public static void initCipher(int cipherMode, String alias) throws Exception {
 		KeyStore.PrivateKeyEntry keyEntry = getKeyStoreEntry(alias);
 		if (keyEntry == null) {
 			throw new Exception("Failed to load key for " + alias);
@@ -63,9 +67,7 @@ public class RSA {
 				break;
 			default : throw new Exception("Invalid cipher mode parameter");
 		}
-		Cipher cipher = Cipher.getInstance(CIPHER);
-		cipher.init(cipherMode, key);
-		return cipher;
+		CIPHER.init(cipherMode, key);
 	}
 
 
@@ -81,5 +83,13 @@ public class RSA {
 		KeyStore keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
 		keyStore.load(null, null);
 		return (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias, null);
+	}
+
+	private static Cipher getCipher() {
+		try {
+			return Cipher.getInstance("RSA/ECB/PKCS1Padding");
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
