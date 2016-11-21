@@ -98,8 +98,10 @@ public class SecureStorage extends CordovaPlugin {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     try {
-                        Cipher encKeyCipher = RSA.createCipher(Cipher.ENCRYPT_MODE, ALIAS);
-                        JSONObject result = AES.encrypt(encKeyCipher, value.getBytes(), adata.getBytes());
+                        JSONObject result = AES.encrypt(value.getBytes(), adata.getBytes());
+                        byte[] aes_key = Base64.decode(result.getString("key"), Base64.DEFAULT);
+                        byte[] aes_key_enc = RSA.encrypt(aes_key, ALIAS);
+                        result.put("key", Base64.encodeToString(aes_key_enc, Base64.DEFAULT));
                         PREFS.store(key, result.toString());
                         callbackContext.success();
                     } catch (Exception e) {
