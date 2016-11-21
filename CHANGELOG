@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.6.3 - 2016-11-21
+------------------
+
+- Android now thread-safe, fixes the issue with concurrent decryptions failing.
+  [demetris-manikas]
+
 2.6.2 - 2016-11-18
 ------------------
 
