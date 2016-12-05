@@ -30,10 +30,18 @@
 
 - (void)set:(CDVInvokedUrlCommand*)command
 {
+    BOOL iCloudSync;
     NSString *service = [command argumentAtIndex:0];
     NSString *key = [command argumentAtIndex:1];
     NSString *value = [command argumentAtIndex:2];
-    BOOL iCloudSync = [[command argumentAtIndex:3] boolValue];
+
+    if([command argumentAtIndex:3] != nil){
+        iCloudSync = [[command argumentAtIndex:3] boolValue];
+    }
+    else{
+        iCloudSync = YES;
+    }
+
 
     [self.commandDelegate runInBackground:^{
         NSError *error;
