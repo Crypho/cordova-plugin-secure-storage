@@ -12,12 +12,15 @@
 {
     NSString *service = [command argumentAtIndex:0];
     NSString *key = [command argumentAtIndex:1];
+
     [self.commandDelegate runInBackground:^{
         NSError *error;
 
         SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
         query.service = service;
         query.account = key;
+
+
 
         if ([query fetch:&error]) {
             [self successWithMessage: query.password : command.callbackId];
@@ -32,13 +35,15 @@
     NSString *service = [command argumentAtIndex:0];
     NSString *key = [command argumentAtIndex:1];
     NSString *value = [command argumentAtIndex:2];
+    BOOL iCloudSync = [[command argumentAtIndex:3] boolValue];
+
     [self.commandDelegate runInBackground:^{
         NSError *error;
 
         if (self.keychainAccesssibilityMapping == nil) {
 
             if( [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 ){
-                  self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+                self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
                                                       (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
                                                       (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
                                                       (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
@@ -49,7 +54,7 @@
                                                       nil];
             }
             else{
-                  self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+                self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
                                                       (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
                                                       (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
                                                       (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
@@ -72,6 +77,10 @@
         query.service = service;
         query.account = key;
         query.password = value;
+
+        if(!iCloudSync && [query respondsToSelector:NSSelectorFromString(@"synchronizationMode")]){
+            query.synchronizationMode = SAMKeychainQuerySynchronizationModeNo;
+        }
 
         if ([query save:&error]) {
             [self successWithMessage: key : command.callbackId];
@@ -162,8 +171,8 @@
 
 -(void)successWithMessage:(NSString *)message : (NSString *)callbackId
 {
-        CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
-        [self.commandDelegate sendPluginResult:commandResult callbackId:callbackId];
+    CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
+    [self.commandDelegate sendPluginResult:commandResult callbackId:callbackId];
 }
 
 -(void)failWithMessage:(NSString *)message : (NSError *)error : (NSString *)callbackId
