@@ -12,7 +12,6 @@
 {
     NSString *service = [command argumentAtIndex:0];
     NSString *key = [command argumentAtIndex:1];
-
     [self.commandDelegate runInBackground:^{
         NSError *error;
 
@@ -41,7 +40,6 @@
     else{
         iCloudSync = YES;
     }
-
 
     [self.commandDelegate runInBackground:^{
         NSError *error;
