@@ -20,8 +20,6 @@
         query.service = service;
         query.account = key;
 
-
-
         if ([query fetch:&error]) {
             [self successWithMessage: query.password : command.callbackId];
         } else {
