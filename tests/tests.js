@@ -80,7 +80,8 @@ exports.defineAutoTests = function() {
         });
 
         it('should call the error handler when getting a key that does not exist', function (done) {
-            spyOn(handlers, 'errorHandler').and.callFake(function () {
+            spyOn(handlers, 'errorHandler').and.callFake(function (res) {
+                expect(res).toEqual(jasmine.any(Error));
                 expect(handlers.successHandler).not.toHaveBeenCalled();
                 done();
             });
@@ -92,7 +93,8 @@ exports.defineAutoTests = function() {
         });
 
         it('should call the error handler when getting a key that existed but got deleted', function (done) {
-            spyOn(handlers, 'errorHandler').and.callFake(function () {
+            spyOn(handlers, 'errorHandler').and.callFake(function (res) {
+                expect(res).toEqual(jasmine.any(Error));
                 expect(handlers.successHandler).not.toHaveBeenCalled();
                 done();
             });
@@ -110,7 +112,8 @@ exports.defineAutoTests = function() {
         });
 
         it('should call the error handler when setting a value that is not a string', function (done) {
-            spyOn(handlers, 'errorHandler').and.callFake(function () {
+            spyOn(handlers, 'errorHandler').and.callFake(function (res) {
+                expect(res).toEqual(jasmine.any(Error));
                 expect(handlers.successHandler).not.toHaveBeenCalled();
                 done();
             });
