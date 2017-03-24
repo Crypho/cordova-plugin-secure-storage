@@ -360,7 +360,7 @@ SecureStorageAndroid.prototype = {
     _migrate_to_native_storage: function (success) {
         var key;
         var secureStorageData = [];
-        var entriesCnt;
+        var entriesCnt = 0;
         var entriesProcessed = 0;
         var entryMigrated;
         var migrated;
@@ -400,16 +400,17 @@ SecureStorageAndroid.prototype = {
 
         for (key in localStorage) {
             if (localStorage.hasOwnProperty(key) && key.indexOf('_SS_') === 0) {
+                entriesCnt++;
                 secureStorageData[key] = localStorage.getItem(key);
             }
         }
-        entriesCnt = secureStorageData.length;
         if (entriesCnt === 0) {
             migrated();
-        }
-        for (key in secureStorageData) {
-            if (secureStorageData.hasOwnProperty(key)) {
-                migrateEntry(key, secureStorageData[key]);
+        } else {
+            for (key in secureStorageData) {
+                if (secureStorageData.hasOwnProperty(key)) {
+                    migrateEntry(key, secureStorageData[key]);
+                }
             }
         }
     },
