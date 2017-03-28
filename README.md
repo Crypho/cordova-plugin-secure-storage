@@ -20,7 +20,7 @@ such as usernames, passwords, tokens, certificates or other sensitive informatio
 - [Plugin API](#plugin-api)
 - [LICENSE](#license)
 
-##<a name="installation"></a>Installation
+## <a name="installation"></a>Installation
 
 Below are the methods for installing this plugin automatically using command line tools. For additional info, take a look at the [Plugman Documentation](https://cordova.apache.org/docs/en/latest/plugin_ref/plugman.html), [`cordova plugin` command](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html#cordova-plugin-command) and [Cordova Plugin Specification](https://cordova.apache.org/docs/en/latest/plugin_ref/spec.html).
 
@@ -41,7 +41,7 @@ or if you want to be running the development version,
 cordova plugin add https://github.com/crypho/cordova-plugin-secure-storage.git
 ```
 
-##<a name="plugin_api"></a> Plugin API
+## <a name="plugin_api"></a> Plugin API
 
 #### Create a namespaced storage.
 
@@ -233,7 +233,7 @@ cordova plugin add PATH_TO_SECURE_STORAGE_PLUGIN/tests
 Just run the app for all platforms. Remember, if you have changes to test you will need to remove the secure storage plugin and add it again for the changes to be seen by the app.
 
 
-##<a name="license"></a> LICENSE
+## <a name="license"></a> LICENSE
 
     The MIT License
 
