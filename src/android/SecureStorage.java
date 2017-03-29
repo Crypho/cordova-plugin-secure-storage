@@ -38,7 +38,7 @@ public class SecureStorage extends CordovaPlugin {
             secureDeviceContext = null;
         }
 
-        if (initContext != null && !initContextRunning) {
+        if (isAndroidVersionSupported(secureDeviceContext) && initContext != null && !initContextRunning) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     initContextRunning = true;
@@ -72,6 +72,9 @@ public class SecureStorage extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
+        if(!isAndroidVersionSupported(callbackContext)){
+            return false;
+        }
         if ("init".equals(action)) {
             // 0 is falsy in js while 1 is truthy
             SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= 21 ? 1 : 0;
@@ -228,5 +231,18 @@ public class SecureStorage extends CordovaPlugin {
 
     private void startActivity(Intent intent){
         cordova.getActivity().startActivity(intent);
+    }
+
+    private boolean isAndroidVersionSupported(CallbackContext context){
+        boolean supported = true;
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+            String errMsg = "API 19 (Android 4.4 KitKat) is required. This device is running API " + android.os.Build.VERSION.SDK_INT;
+            Log.w(TAG, errMsg);
+            if(context != null){
+                context.error(errMsg);
+            }
+            supported = false;
+        }
+        return supported;
     }
 }
