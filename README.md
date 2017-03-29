@@ -112,7 +112,7 @@ On iOS it is possible to configure the accessibility of the keychain by setting 
  * AlwaysThisDeviceOnly
  * WhenPasscodeSetThisDeviceOnly (this option is available only on iOS8 and later)
 
-For reference what these settings mean, see [Keychain Item Accessibility Constants](https://developer.apple.com/library/ios/documentation/Security/Reference/keychainservices/#//apple_ref/doc/constant_group/Keychain_Item_Accessibility_Constants).
+For reference what these settings mean, see [Keychain Item Accessibility Constants](https://developer.apple.com/reference/security/keychain_services/keychain_item_accessibility_constants).
 
 For example, include in your ``config.xml`` the following:
 
