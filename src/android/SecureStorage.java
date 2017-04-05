@@ -48,6 +48,8 @@ public class SecureStorage extends CordovaPlugin {
                     initContextRunning = true;
                     try {
                         if (!RSA.isEntryAvailable(ALIAS)) {
+                            //Solves Issue #96. The RSA key may have been deleted by changing the lock type.
+                            PREFS.clear();
                             RSA.createKeyPair(getContext(), ALIAS);
                         }
                         initSuccess(initContext);
