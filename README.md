@@ -166,7 +166,7 @@ var _init = function () {
                 function () {
                     ss.secureDevice(
                         function () {
-                            console.log('OK');
+                            _init();
                         },
                         function () {
                             _init();
