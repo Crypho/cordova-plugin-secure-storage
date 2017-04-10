@@ -89,10 +89,10 @@ SecureStorageiOS.prototype = {
         }
     },
 
-    set: function (success, error, key, value) {
+    set: function (success, error, key, value, iCloudSync) {
         try {
             _checkIsString(value);
-            _executeNativeMethod(success, error, 'set', [this.service, key, value]);
+            _executeNativeMethod(success, error, 'set', [this.service, key, value, iCloudSync]);
         } catch (e) {
             error(e);
         }
@@ -567,20 +567,20 @@ SecureStorageBrowser.prototype = {
 };
 
 switch (cordova.platformId) {
-case 'ios':
-    SecureStorage = SecureStorageiOS;
-    break;
-case 'android':
-    SecureStorage = SecureStorageAndroid;
-    break;
-case 'windows':
-    SecureStorage = SecureStorageWindows;
-    break;
-case 'browser':
-    SecureStorage = SecureStorageBrowser;
-    break;
-default:
-    SecureStorage = null;
+    case 'ios':
+        SecureStorage = SecureStorageiOS;
+        break;
+    case 'android':
+        SecureStorage = SecureStorageAndroid;
+        break;
+    case 'windows':
+        SecureStorage = SecureStorageWindows;
+        break;
+    case 'browser':
+        SecureStorage = SecureStorageBrowser;
+        break;
+    default:
+        SecureStorage = null;
 }
 
 if (!cordova.plugins) {
