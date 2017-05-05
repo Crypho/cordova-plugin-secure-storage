@@ -106,10 +106,8 @@ On iOS secrets are stored directly in the KeyChain through the [SAMKeychain](htt
 On iOS it is possible to configure the accessibility of the keychain by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
  * AfterFirstUnlock
  * AfterFirstUnlockThisDeviceOnly
- * WhenUnlocked
+ * WhenUnlocked (default)
  * WhenUnlockedThisDeviceOnly
- * Always
- * AlwaysThisDeviceOnly
  * WhenPasscodeSetThisDeviceOnly (this option is available only on iOS8 and later)
 
 For reference what these settings mean, see [Keychain Item Accessibility Constants](https://developer.apple.com/reference/security/keychain_services/keychain_item_accessibility_constants).

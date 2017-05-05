@@ -2,6 +2,7 @@
 
 @interface SecureStorage : CDVPlugin
 
+- (void)init:(CDVInvokedUrlCommand*)command;
 - (void)get:(CDVInvokedUrlCommand*)command;
 - (void)set:(CDVInvokedUrlCommand*)command;
 - (void)remove:(CDVInvokedUrlCommand*)command;
