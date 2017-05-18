@@ -1,0 +1,31 @@
+{
+  "name": "cordova-plugin-secure-storage-tests",
+  "version": "1.0.0",
+  "description": "Tests for cordova-plugin-secure-storage",
+  "author": "Yiorgis Gozadinos <ggozad@crypho.com>",
+  "cordova": {
+    "id": "cordova-plugin-secure-storage-tests",
+    "platforms": [
+      "android",
+      "ios",
+      "wp8",
+      "windows"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crypho/cordova-plugin-secure-storage.git"
+  },
+  "scripts": {
+    "eslint": "./node_modules/.bin/eslint www/securestorage.js tests/tests.js"
+  },
+  "devDependencies": {
+    "cordova-plugin-test-framework": ">=1.0.0",
+    "eslint": ""
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/crypho/cordova-plugin-secure-storage/issues"
+  },
+  "homepage": "https://github.com/crypho/cordova-plugin-secure-storage#readme"
+}
