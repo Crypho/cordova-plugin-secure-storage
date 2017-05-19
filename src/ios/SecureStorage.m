@@ -10,7 +10,7 @@
 {
     CFTypeRef accessibility;
     NSString *keychainAccessibility;
-    NSDictionary keychainAccesssibilityMapping;
+    NSDictionary *keychainAccesssibilityMapping;
 
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0){
           keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
