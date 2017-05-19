@@ -6,7 +6,41 @@
 
 @implementation SecureStorage
 
-@synthesize keychainAccesssibilityMapping;
+- (void)init:(CDVInvokedUrlCommand*)command
+{
+    CFTypeRef accessibility;
+    NSString *keychainAccessibility;
+    NSDictionary *keychainAccesssibilityMapping;
+
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0){
+          keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+              (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
+              (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
+              (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
+              (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
+              (__bridge id)(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly), @"whenpasscodesetthisdeviceonly",
+              nil];
+    } else {
+          keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
+              (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
+              (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
+              (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
+              (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
+              nil];
+    }
+    keychainAccessibility = [[self.commandDelegate.settings objectForKey:[@"KeychainAccessibility" lowercaseString]] lowercaseString];
+    if (keychainAccessibility == nil) {
+        [self successWithMessage: nil : command.callbackId];
+    } else {
+        if ([keychainAccesssibilityMapping objectForKey:(keychainAccessibility)] != nil) {
+            accessibility = (__bridge CFTypeRef)([keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
+            [SAMKeychain setAccessibilityType:accessibility];
+            [self successWithMessage: nil : command.callbackId];
+        } else {
+            [self failWithMessage: @"Unrecognized KeychainAccessibility value in config" : nil : command.callbackId];
+        }
+    }
+}
 
 - (void)get:(CDVInvokedUrlCommand*)command
 {
@@ -35,40 +69,7 @@
     [self.commandDelegate runInBackground:^{
         NSError *error;
 
-        if (self.keychainAccesssibilityMapping == nil) {
-
-            if( [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 ){
-                  self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
-                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
-                                                      (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
-                                                      (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
-                                                      (__bridge id)(kSecAttrAccessibleAlways), @"always",
-                                                      (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
-                                                      (__bridge id)(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly), @"whenpasscodesetthisdeviceonly",
-                                                      nil];
-            }
-            else{
-                  self.keychainAccesssibilityMapping = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly), @"afterfirstunlockthisdeviceonly",
-                                                      (__bridge id)(kSecAttrAccessibleAfterFirstUnlock), @"afterfirstunlock",
-                                                      (__bridge id)(kSecAttrAccessibleWhenUnlocked), @"whenunlocked",
-                                                      (__bridge id)(kSecAttrAccessibleWhenUnlockedThisDeviceOnly), @"whenunlockedthisdeviceonly",
-                                                      (__bridge id)(kSecAttrAccessibleAlways), @"always",
-                                                      (__bridge id)(kSecAttrAccessibleAlwaysThisDeviceOnly), @"alwaysthisdeviceonly",
-                                                      nil];
-            }
-        }
-
-        NSString* keychainAccessibility = [[self.commandDelegate.settings objectForKey:[@"KeychainAccessibility" lowercaseString]] lowercaseString];
-
-        if ([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)] != nil) {
-            CFTypeRef accessibility = (__bridge CFTypeRef)([self.keychainAccesssibilityMapping objectForKey:(keychainAccessibility)]);
-            [SAMKeychain setAccessibilityType:accessibility];
-        }
-
         SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
-
         query.service = service;
         query.account = key;
         query.password = value;

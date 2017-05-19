@@ -76,7 +76,16 @@ var _executeNativeMethod = function (success, error, nativeMethodName, args) {
 
 SecureStorageiOS = function (success, error, service) {
     this.service = service;
-    setTimeout(success, 0);
+    try {
+        _executeNativeMethod(
+            success,
+            error,
+            'init',
+            [this.service]
+        );
+    } catch (e) {
+        error(e);
+    }
     return this;
 };
 
