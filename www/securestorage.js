@@ -134,7 +134,12 @@ SecureStorageiOS.prototype = {
 
 // SecureStorage for Windows web interface and proxy parameters are the same as on iOS
 // so we don't create own definition for Windows and simply re-use iOS
-SecureStorageWindows = SecureStorageiOS;
+SecureStorageWindows = function (success, error, service) {
+    this.service = service;
+    setTimeout(success, 0);
+    return this;
+};
+SecureStorageWindows.prototype = SecureStorageiOS.prototype;
 
 SecureStorageAndroid = function (success, error, service, options) {
     var self = this;
