@@ -1,12 +1,18 @@
 Changelog
 =========
 
+2.6.8 - 2017-05-29
+------------------
+
+- Fix multiple namespaced storages for android.
+  [demetris-manikas]
+
 2.6.7 - 2017-05-24
 ------------------
 
 - Fixed windows bug introduced by 2.6.6.
   [digaus]
-  
+
 2.6.6 - 2017-05-19
 ------------------
 
