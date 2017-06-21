@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import javax.crypto.Cipher;
 
 import android.app.Activity;
-import android.widget.Toast;
+
 
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
@@ -36,6 +36,7 @@ public class SecureStorage extends CordovaPlugin {
     private volatile boolean initContextRunning = false;
 
     private static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1;
+    private CallbackContext callback = null;
 
     @Override
     public void onResume(boolean multitasking) {
@@ -85,6 +86,8 @@ public class SecureStorage extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
+        callback = callbackContext;
+
         if(!SUPPORTED){
             Log.w(TAG, MSG_NOT_SUPPORTED);
             callbackContext.error(MSG_NOT_SUPPORTED);
@@ -237,12 +240,13 @@ public class SecureStorage extends CordovaPlugin {
             return true;
         }
         if("askCredentials".equals(action)){
-            cordova.setActivityResultCallback (this);
+            cordova.setActivityResultCallback(this);
             KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
             Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
             if (intent != null) {
                  cordova.getActivity().startActivityForResult(intent, REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS);
             }
+            return true;
         }
         return false;
     }
@@ -282,10 +286,9 @@ public class SecureStorage extends CordovaPlugin {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
             if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(cordova.getActivity().getApplicationContext(), "Authentication Success.", Toast.LENGTH_SHORT).show();
-
+                callback.success("success");
             } else {
-                Toast.makeText(cordova.getActivity().getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                callback.error("failed");
             }
         }
     }
