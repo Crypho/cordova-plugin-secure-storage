@@ -18,6 +18,9 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import javax.crypto.Cipher;
 
+import android.app.Activity;
+
+
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
@@ -31,6 +34,9 @@ public class SecureStorage extends CordovaPlugin {
     private String INIT_SERVICE;
     private volatile CallbackContext initContext, secureDeviceContext;
     private volatile boolean initContextRunning = false;
+
+    private static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1;
+    private CallbackContext callback = null;
 
     @Override
     public void onResume(boolean multitasking) {
@@ -80,6 +86,8 @@ public class SecureStorage extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
+        callback = callbackContext;
+
         if(!SUPPORTED){
             Log.w(TAG, MSG_NOT_SUPPORTED);
             callbackContext.error(MSG_NOT_SUPPORTED);
@@ -231,6 +239,15 @@ public class SecureStorage extends CordovaPlugin {
             callbackContext.success();
             return true;
         }
+        if("askCredentials".equals(action)){
+            cordova.setActivityResultCallback(this);
+            KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
+            Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
+            if (intent != null) {
+                 cordova.getActivity().startActivityForResult(intent, REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS);
+            }
+            return true;
+        }
         return false;
     }
 
@@ -263,6 +280,17 @@ public class SecureStorage extends CordovaPlugin {
 
     private void startActivity(Intent intent) {
         cordova.getActivity().startActivity(intent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
+            if (resultCode == Activity.RESULT_OK) {
+                callback.success("success");
+            } else {
+                callback.error("failed");
+            }
+        }
     }
 
 }

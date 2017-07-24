@@ -508,6 +508,19 @@ SecureStorageAndroid.prototype = {
             'keys',
             [self.service]
         );
+    },
+
+    askCredentials : function(success, error) {
+        try {
+            _executeNativeMethod(
+                success,
+                error,
+                'askCredentials',
+                []
+            );
+        } catch (e) {
+            error(e);
+        }
     }
 };
 
