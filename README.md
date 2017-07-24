@@ -1,7 +1,7 @@
-
 # SecureStorage plugin for Apache Cordova
 
 [![NPM](https://nodei.co/npm/cordova-plugin-secure-storage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-secure-storage/)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Frishabh09%2Fcordova-plugin-secure-storage.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Frishabh09%2Fcordova-plugin-secure-storage?ref=badge_shield)
 
 ## Introduction
 
@@ -254,3 +254,5 @@ Just run the app for all platforms. Remember, if you have changes to test you wi
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Frishabh09%2Fcordova-plugin-secure-storage.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Frishabh09%2Fcordova-plugin-secure-storage?ref=badge_large)
