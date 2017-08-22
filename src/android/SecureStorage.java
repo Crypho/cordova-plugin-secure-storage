@@ -3,6 +3,9 @@ package com.crypho.plugins;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 
+import android.annotation.TargetApi;
+import android.security.KeyChain;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.util.Base64;
 import android.os.Build;
@@ -16,13 +19,14 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import javax.crypto.Cipher;
 
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
     private static final boolean SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+    private static final boolean USE_LEGACY = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
+    private static final boolean SECURE_HARDWARE_ONLY = true; // TODO - read from config.xml
 
     private static final String MSG_NOT_SUPPORTED = "API 19 (Android 4.4 KitKat) is required. This device is running API " + Build.VERSION.SDK_INT;
     private static final String MSG_DEVICE_NOT_SECURE = "Device is not secure";
@@ -52,7 +56,12 @@ public class SecureStorage extends CordovaPlugin {
                         if (!RSA.isEntryAvailable(alias)) {
                             //Solves Issue #96. The RSA key may have been deleted by changing the lock type.
                             getStorage(INIT_SERVICE).clear();
-                            RSA.createKeyPair(getContext(), alias);
+
+                            if (USE_LEGACY) {
+                                RSA.createKeyPairLegacy(getContext(), alias);
+                            } else {
+                                RSA.createKeyPair(getContext(), alias, SECURE_HARDWARE_ONLY);
+                            }
                         }
                         initSuccess(initContext);
                     } catch (Exception e) {
@@ -67,24 +76,32 @@ public class SecureStorage extends CordovaPlugin {
         }
     }
 
+    @TargetApi(18)
     private boolean isDeviceSecure() {
+        boolean isSecureDevice = true;
         KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
         try {
-            Method isSecure = null;
-            isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
-            return ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
+            Method isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
+            isSecureDevice = isSecureDevice && ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
         } catch (Exception e) {
-            return keyguardManager.isKeyguardSecure();
+            isSecureDevice = isSecureDevice && keyguardManager.isKeyguardSecure();
         }
+
+        if (USE_LEGACY && SECURE_HARDWARE_ONLY) {
+            isSecureDevice = isSecureDevice && KeyChain.isBoundKeyAlgorithm(KeyProperties.KEY_ALGORITHM_RSA);
+        }
+
+        return isSecureDevice;
     }
 
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
-        if(!SUPPORTED){
+        if (!SUPPORTED){
             Log.w(TAG, MSG_NOT_SUPPORTED);
             callbackContext.error(MSG_NOT_SUPPORTED);
             return false;
         }
+
         if ("init".equals(action)) {
             String service = args.getString(0);
             String alias = service2alias(service);
@@ -104,6 +121,7 @@ public class SecureStorage extends CordovaPlugin {
             }
             return true;
         }
+
         if ("set".equals(action)) {
             final String service = args.getString(0);
             final String key = args.getString(1);
@@ -126,6 +144,7 @@ public class SecureStorage extends CordovaPlugin {
             });
             return true;
         }
+
         if ("get".equals(action)) {
             final String service = args.getString(0);
             final String key = args.getString(1);
@@ -154,6 +173,7 @@ public class SecureStorage extends CordovaPlugin {
             }
             return true;
         }
+
         if ("decrypt_rsa".equals(action)) {
             final String service = args.getString(0);
             // getArrayBuffer does base64 decoding
@@ -193,6 +213,7 @@ public class SecureStorage extends CordovaPlugin {
             unlockCredentials();
             return true;
         }
+
         //SharedPreferences interface
         if ("remove".equals(action)) {
             String service = args.getString(0);
@@ -201,6 +222,7 @@ public class SecureStorage extends CordovaPlugin {
             callbackContext.success();
             return true;
         }
+
         if ("store".equals(action)) {
             String service = args.getString(0);
             String key = args.getString(1);
@@ -209,6 +231,7 @@ public class SecureStorage extends CordovaPlugin {
             callbackContext.success();
             return true;
         }
+
         if ("fetch".equals(action)) {
             String service = args.getString(0);
             String key = args.getString(1);
@@ -220,17 +243,20 @@ public class SecureStorage extends CordovaPlugin {
             }
             return true;
         }
+
         if ("keys".equals(action)) {
             String service = args.getString(0);
             callbackContext.success(new JSONArray(getStorage(service).keys()));
             return true;
         }
+
         if ("clear".equals(action)) {
             String service = args.getString(0);
             getStorage(service).clear();
             callbackContext.success();
             return true;
         }
+
         return false;
     }
 
