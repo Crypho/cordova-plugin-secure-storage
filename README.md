@@ -3,6 +3,9 @@
 
 [![NPM](https://nodei.co/npm/cordova-plugin-secure-storage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-secure-storage/)
 
+### Looking for maintainers!
+As the company behind SecureStorage is moving away from Cordova, we can allocate very little time to further develop SecureStorage. If you are interested in taking over the maintenance and development of the plugin please contact us at <dev@crypho.com>.
+
 ## Introduction
 
 This plugin is for use with [Apache Cordova](http://cordova.apache.org/) and allows your application to securely store secrets
