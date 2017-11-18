@@ -151,10 +151,10 @@ SecureStorageAndroid = function (success, error, service, options) {
     try {
         _executeNativeMethod(
             function (native_aes_supported) {
+                self.options.native = native_aes_supported && self.options.native;
                 var checkMigrateToNativeAES;
 
                 checkMigrateToNativeAES = function () {
-                    self.options.native = native_aes_supported && self.options.native;
                     if (!self.options.native){
                         success();
                     } else {
