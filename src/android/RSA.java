@@ -43,7 +43,6 @@ public class RSA {
 			.setSerialNumber(BigInteger.ONE)
 			.setStartDate(notBefore.getTime())
 			.setEndDate(notAfter.getTime())
-			.setEncryptionRequired()
 			.setKeySize(2048)
 			.setKeyType("RSA")
 		if (encryptionRequired) {
