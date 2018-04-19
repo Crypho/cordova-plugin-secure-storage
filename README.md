@@ -183,6 +183,14 @@ _init();
 
 ```
 
+If you don't want to force screen lock usage, it is possible to send additional option that disable key pair encryption when screen lock not used (more info about this requirements in [Android Security: The Forgetful Keystore](https://doridori.github.io/android-security-the-forgetful-keystore/) blog post): 
+
+```js
+new cordova.plugins.SecureStorage(
+  successCallback, errorCallback, appKey, {keyEncryptionRequired: false}
+);
+```
+
 ##### Android keystore deletion on security setting change
 
 Changing the lock screen type on Android erases the keystore (issues [61989](https://code.google.com/p/android/issues/detail?id=61989) and [210402](https://code.google.com/p/android/issues/detail?id=210402)). This is also described in the [Android Security: The Forgetful Keystore](https://doridori.github.io/android-security-the-forgetful-keystore/) blog post.
