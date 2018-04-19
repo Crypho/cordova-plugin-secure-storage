@@ -188,7 +188,7 @@ SecureStorageAndroid = function (success, error, service, options) {
             },
             error,
             'init',
-            [this.service]
+            [this.service, options.keyEncryptionRequired]
         );
     } catch (e) {
         error(e);
@@ -199,6 +199,7 @@ SecureStorageAndroid = function (success, error, service, options) {
 SecureStorageAndroid.prototype = {
     options: {
         native: true,
+        keyEncryptionRequired: true,
         migrateLocalStorage: false
     },
 

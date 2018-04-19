@@ -32,12 +32,12 @@ public class RSA {
 		}
 	}
 
-	public static void createKeyPair(Context ctx, String alias) throws Exception {
+	public static void createKeyPair(Context ctx, String alias, boolean encryptionRequired) throws Exception {
 		Calendar notBefore = Calendar.getInstance();
 		Calendar notAfter = Calendar.getInstance();
 		notAfter.add(Calendar.YEAR, 100);
 		String principalString = String.format("CN=%s, OU=%s", alias, ctx.getPackageName());
-		KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(ctx)
+		KeyPairGeneratorSpec.Builder builder = new KeyPairGeneratorSpec.Builder(ctx)
 			.setAlias(alias)
 			.setSubject(new X500Principal(principalString))
 			.setSerialNumber(BigInteger.ONE)
@@ -46,7 +46,10 @@ public class RSA {
 			.setEncryptionRequired()
 			.setKeySize(2048)
 			.setKeyType("RSA")
-			.build();
+		if (encryptionRequired) {
+			builder.setEncryptionRequired();
+		}
+		KeyPairGeneratorSpec spec = builder.build();
 		KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance("RSA", KEYSTORE_PROVIDER);
 		kpGenerator.initialize(spec);
 		kpGenerator.generateKeyPair();
