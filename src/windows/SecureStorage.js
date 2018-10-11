@@ -1,5 +1,9 @@
 var SecureStorageProxy = {
 
+    init: function (win, fail, args) {
+        setTimeout(win, 0);
+    },
+
     get: function (win, fail, args) {
         try {
             var service = args[0];
