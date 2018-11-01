@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.0 - 2018-11-01
+------------------
+
+- Drop KitKat support, simplify android using only native AES.
+  [demetris-manikas]
+
 2.6.8 - 2017-05-29
 ------------------
 
