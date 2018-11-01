@@ -21,10 +21,9 @@ import javax.crypto.Cipher;
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
 
-    private static final boolean SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+    private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-    private static final String MSG_NOT_SUPPORTED = "API 19 (Android 4.4 KitKat) is required. This device is running API " + Build.VERSION.SDK_INT;
+    private static final String MSG_NOT_SUPPORTED = "API 20 (Android 5.0 Lollipop) is required. This device is running API " + Build.VERSION.SDK_INT;
     private static final String MSG_DEVICE_NOT_SECURE = "Device is not secure";
 
     private Hashtable<String, SharedPreferencesHandler> SERVICE_STORAGE = new Hashtable<String, SharedPreferencesHandler>();
@@ -67,17 +66,6 @@ public class SecureStorage extends CordovaPlugin {
         }
     }
 
-    private boolean isDeviceSecure() {
-        KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
-        try {
-            Method isSecure = null;
-            isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
-            return ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
-        } catch (Exception e) {
-            return keyguardManager.isKeyguardSecure();
-        }
-    }
-
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if(!SUPPORTED){
@@ -90,7 +78,7 @@ public class SecureStorage extends CordovaPlugin {
             String alias = service2alias(service);
             INIT_SERVICE = service;
 
-            SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias + "_SS", getContext());
+            SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias, getContext());
             SERVICE_STORAGE.put(service, PREFS);
 
             if (!isDeviceSecure()) {
@@ -117,9 +105,9 @@ public class SecureStorage extends CordovaPlugin {
                         byte[] aes_key_enc = RSA.encrypt(aes_key, service2alias(service));
                         result.put("key", Base64.encodeToString(aes_key_enc, Base64.DEFAULT));
                         getStorage(service).store(key, result.toString());
-                        callbackContext.success();
+                        callbackContext.success(key);
                     } catch (Exception e) {
-                        Log.e(TAG, "Encrypt (RSA/AES) failed :", e);
+                        Log.e(TAG, "Encrypt failed :", e);
                         callbackContext.error(e.getMessage());
                     }
                 }
@@ -144,7 +132,7 @@ public class SecureStorage extends CordovaPlugin {
                             String decrypted = new String(AES.decrypt(ct, decryptedKey, iv, adata));
                             callbackContext.success(decrypted);
                         } catch (Exception e) {
-                            Log.e(TAG, "Decrypt (RSA/AES) failed :", e);
+                            Log.e(TAG, "Decrypt failed :", e);
                             callbackContext.error(e.getMessage());
                         }
                     }
@@ -154,70 +142,16 @@ public class SecureStorage extends CordovaPlugin {
             }
             return true;
         }
-        if ("decrypt_rsa".equals(action)) {
-            final String service = args.getString(0);
-            // getArrayBuffer does base64 decoding
-            final byte[] decryptMe = args.getArrayBuffer(1);
-            cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    try {
-                        byte[] decrypted = RSA.decrypt(decryptMe, service2alias(service));
-                        callbackContext.success(new String (decrypted));
-                    } catch (Exception e) {
-                        Log.e(TAG, "Decrypt (RSA) failed :", e);
-                        callbackContext.error(e.getMessage());
-                    }
-                }
-            });
-            return true;
-        }
-        if ("encrypt_rsa".equals(action)) {
-            final String service = args.getString(0);
-            final String encryptMe = args.getString(1);
-            cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    try {
-                        byte[] encrypted = RSA.encrypt(encryptMe.getBytes(), service2alias(service));
-                        callbackContext.success(Base64.encodeToString(encrypted, Base64.DEFAULT));
-                    } catch (Exception e) {
-                        Log.e(TAG, "Encrypt (RSA) failed :", e);
-                        callbackContext.error(e.getMessage());
-                    }
-                }
-            });
-            return true;
-        }
-
         if ("secureDevice".equals(action)) {
             secureDeviceContext = callbackContext;
             unlockCredentials();
             return true;
         }
-        //SharedPreferences interface
         if ("remove".equals(action)) {
             String service = args.getString(0);
             String key = args.getString(1);
             getStorage(service).remove(key);
-            callbackContext.success();
-            return true;
-        }
-        if ("store".equals(action)) {
-            String service = args.getString(0);
-            String key = args.getString(1);
-            String value = args.getString(2);
-            getStorage(service).store(key, value);
-            callbackContext.success();
-            return true;
-        }
-        if ("fetch".equals(action)) {
-            String service = args.getString(0);
-            String key = args.getString(1);
-            String value = getStorage(service).fetch(key);
-            if (value != null) {
-                callbackContext.success(value);
-            } else {
-                callbackContext.error("Key [" + key + "] not found.");
-            }
+            callbackContext.success(key);
             return true;
         }
         if ("keys".equals(action)) {
@@ -234,6 +168,17 @@ public class SecureStorage extends CordovaPlugin {
         return false;
     }
 
+    private boolean isDeviceSecure() {
+        KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
+        try {
+            Method isSecure = null;
+            isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
+            return ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
+        } catch (Exception e) {
+            return keyguardManager.isKeyguardSecure();
+        }
+    }
+
     private String service2alias(String service) {
         String res = getContext().getPackageName() + "." + service;
         return  res;
@@ -244,8 +189,7 @@ public class SecureStorage extends CordovaPlugin {
     }
 
     private void initSuccess(CallbackContext context) {
-        // 0 is falsy in js while 1 is truthy
-        context.success(SUPPORTS_NATIVE_AES ? 1 : 0);
+        context.success();
     }
 
     private void unlockCredentials() {

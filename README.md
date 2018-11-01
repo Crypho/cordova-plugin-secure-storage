@@ -141,7 +141,8 @@ On Android there does not exist an equivalent of the iOS KeyChain. The ``SecureS
 
 The inverse process is followed on ``get``.
 
-Native AES is used when available, otherwise encryption is provided by the [sjcl](https://github.com/bitwiseshiftleft/sjcl) library. API level 19 (Android 4.4 KitKat) is required on Android.
+Native AES is used.
+Minimum android supported version is 5.0 Lollipop
 
 ##### Users must have a secure screen-lock set.
 
