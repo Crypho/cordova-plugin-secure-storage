@@ -16,6 +16,22 @@ var _isString = function isString(x) {
     return Object.prototype.toString.call(x) === '[object String]';
 };
 
+var _merge_options = function (defaults, options){	
+    var res = {};	
+    var attrname;	
+     for (attrname in defaults) {	
+        res[attrname] = defaults[attrname];	
+    }	
+    for (attrname in options) {	
+        if (res.hasOwnProperty(attrname)) {	
+            res[attrname] = options[attrname];	
+        } else {	
+            throw new Error('SecureStorage failure: invalid option ' + attrname);	
+        }	
+    }	
+     return res;	
+};
+
 /**
  * Helper method to execute Cordova native method
  *
@@ -45,11 +61,16 @@ var _executeNativeMethod = function (success, error, nativeMethodName, args) {
     cordova.exec(success, fail, 'SecureStorage', nativeMethodName, args);
 };
 
-SecureStorage = function (success, error, service) {
+SecureStorage = function (success, error, service, options) {
+
+    if (options && options[cordova.platformId]) {
+        this.options = _merge_options(this.options, options[cordova.platformId]);
+    }
+
     this.service = service;
 
     try {
-        _executeNativeMethod(success, error, 'init', [this.service]);
+        _executeNativeMethod(success, error, 'init', [this.service, this.options]);
     } catch (e) {
         error(e);
     }
@@ -108,6 +129,10 @@ SecureStorage.prototype = {
 };
 
 if (cordova.platformId === 'android') {
+    SecureStorage.prototype.options = {
+        packageName: null
+    }
+
     SecureStorage.prototype.secureDevice = function (success, error) {
         try {
             _executeNativeMethod(success, error, 'secureDevice', []);

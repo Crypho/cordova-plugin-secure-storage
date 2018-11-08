@@ -28,6 +28,7 @@ public class SecureStorage extends CordovaPlugin {
 
     private Hashtable<String, SharedPreferencesHandler> SERVICE_STORAGE = new Hashtable<String, SharedPreferencesHandler>();
     private String INIT_SERVICE;
+    private String INIT_PACKAGENAME;
     private volatile CallbackContext initContext, secureDeviceContext;
     private volatile boolean initContextRunning = false;
 
@@ -75,10 +76,32 @@ public class SecureStorage extends CordovaPlugin {
         }
         if ("init".equals(action)) {
             String service = args.getString(0);
+            JSONObject options = args.getJSONObject(1);
+            String packageName = options.getString('packageName');
+
+            Context ctx = null;
+            
+            // Solves #151. By default, we use our own ApplicationContext
+            // If packageName is provided, we try to get the Context of another Application with that packageName
+            if (packageName.equals(JSONObject.NULL)) {
+                ctx = getContext();
+                packageName = ctx.getPackageName();
+            } else {
+                try {
+                    ctx = getPackageContext(packageName);
+                } catch (Exception e) {
+                    // This will fail if the application with given packageName is not installed
+                    // OR if we do not have required permissions and cause a security violation
+                    Log.e(TAG, "Init failed :", e);
+                    callbackContext.error(e.getMessage());
+                }
+            }
+
+            INIT_PACKAGENAME = packageName;
             String alias = service2alias(service);
             INIT_SERVICE = service;
 
-            SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias, getContext());
+            SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias, ctx);
             SERVICE_STORAGE.put(service, PREFS);
 
             if (!isDeviceSecure()) {
@@ -180,7 +203,7 @@ public class SecureStorage extends CordovaPlugin {
     }
 
     private String service2alias(String service) {
-        String res = getContext().getPackageName() + "." + service;
+        String res = INIT_PACKAGENAME + "." + service;
         return  res;
     }
 
@@ -203,6 +226,19 @@ public class SecureStorage extends CordovaPlugin {
 
     private Context getContext() {
         return cordova.getActivity().getApplicationContext();
+    }
+
+    private Context getPackageContext(String packageName) throws Exception {
+        Context pkgContext = null;
+
+        Context context = getContext();
+        if (context.getPackageName().equals(packageName)) {
+            pkgContext = context;
+        } else {
+            pkgContext = context.createPackageContext(packageName, 0);
+        }
+
+        return pkgContext;
     }
 
     private void startActivity(Intent intent) {
