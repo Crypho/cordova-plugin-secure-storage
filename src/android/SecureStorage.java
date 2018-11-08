@@ -77,13 +77,13 @@ public class SecureStorage extends CordovaPlugin {
         if ("init".equals(action)) {
             String service = args.getString(0);
             JSONObject options = args.getJSONObject(1);
-            String packageName = options.getString('packageName');
+            String packageName = options.getString("packageName");
 
             Context ctx = null;
             
             // Solves #151. By default, we use our own ApplicationContext
             // If packageName is provided, we try to get the Context of another Application with that packageName
-            if (packageName.equals(JSONObject.NULL)) {
+            if (packageName.equals("null")) {
                 ctx = getContext();
                 packageName = ctx.getPackageName();
             } else {
