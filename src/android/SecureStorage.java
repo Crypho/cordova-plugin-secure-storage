@@ -83,21 +83,16 @@ public class SecureStorage extends CordovaPlugin {
             
             // Solves #151. By default, we use our own ApplicationContext
             // If packageName is provided, we try to get the Context of another Application with that packageName
-            if (packageName.equals("null")) {
-                ctx = getContext();
-                packageName = ctx.getPackageName();
-            } else {
-                try {
-                    ctx = getPackageContext(packageName);
-                } catch (Exception e) {
-                    // This will fail if the application with given packageName is not installed
-                    // OR if we do not have required permissions and cause a security violation
-                    Log.e(TAG, "Init failed :", e);
-                    callbackContext.error(e.getMessage());
-                }
+            try {
+                ctx = getPackageContext(packageName);
+            } catch (Exception e) {
+                // This will fail if the application with given packageName is not installed
+                // OR if we do not have required permissions and cause a security violation
+                Log.e(TAG, "Init failed :", e);
+                callbackContext.error(e.getMessage());
             }
 
-            INIT_PACKAGENAME = packageName;
+            INIT_PACKAGENAME = ctx.getPackageName();
             String alias = service2alias(service);
             INIT_SERVICE = service;
 
@@ -232,7 +227,7 @@ public class SecureStorage extends CordovaPlugin {
         Context pkgContext = null;
 
         Context context = getContext();
-        if (context.getPackageName().equals(packageName)) {
+        if (packageName.equals("null") || context.getPackageName().equals(packageName)) {
             pkgContext = context;
         } else {
             pkgContext = context.createPackageContext(packageName, 0);

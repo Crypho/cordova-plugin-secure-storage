@@ -62,15 +62,15 @@ var _executeNativeMethod = function (success, error, nativeMethodName, args) {
 };
 
 SecureStorage = function (success, error, service, options) {
-
-    if (options && options[cordova.platformId]) {
-        this.options = _merge_options(this.options, options[cordova.platformId]);
+    var platformId = cordova.platformId;
+    if (this.options[platformId] && options && options[platformId]) {
+        this.options[platformId] = _merge_options(this.options[platformId], options[platformId]);
     }
 
     this.service = service;
 
     try {
-        _executeNativeMethod(success, error, 'init', [this.service, this.options]);
+        _executeNativeMethod(success, error, 'init', [this.service, this.options[platformId]]);
     } catch (e) {
         error(e);
     }
@@ -78,6 +78,12 @@ SecureStorage = function (success, error, service, options) {
 };
 
 SecureStorage.prototype = {
+    options: {
+        android: {
+            packageName: null
+        }
+    },
+
     get: function (success, error, key) {
         try {
             if (!_isString(key)) {
@@ -129,10 +135,6 @@ SecureStorage.prototype = {
 };
 
 if (cordova.platformId === 'android') {
-    SecureStorage.prototype.options = {
-        packageName: null
-    }
-
     SecureStorage.prototype.secureDevice = function (success, error) {
         try {
             _executeNativeMethod(success, error, 'secureDevice', []);
