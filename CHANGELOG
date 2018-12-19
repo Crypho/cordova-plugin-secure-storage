@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.1 - 2018-12-19
+------------------
+
+- Properly access private keys on android.
+  [demetris-manikas]
+
 3.0.0 - 2018-11-01
 ------------------
 
