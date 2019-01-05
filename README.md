@@ -252,7 +252,7 @@ The browser platform is supported as a mock only. Key/values are stored unencryp
 4. Add the `cordova-plugin-test-framework` plugin:
 
 ```
-cordova plugin add http://git-wip-us.apache.org/repos/asf/cordova-plugin-test-framework.git
+cordova plugin add cordova-plugin-test-framework
 ```
 
 5. Finally add the secure storage plugin as well as the tests from its location
