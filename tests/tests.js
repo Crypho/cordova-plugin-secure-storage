@@ -422,7 +422,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             }, SERVICE,
             {
                 android: {
-                    packageName: "io.cordova.hellocordova"
+                    packageName: "com.test.app1"
                 }
             });
         })
