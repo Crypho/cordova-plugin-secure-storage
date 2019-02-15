@@ -45,5 +45,6 @@
   "bugs": {
     "url": "https://github.com/crypho/cordova-plugin-secure-storage/issues"
   },
-  "homepage": "https://github.com/crypho/cordova-plugin-secure-storage#readme"
+  "homepage": "https://github.com/crypho/cordova-plugin-secure-storage#readme",
+  "types": "./types/index.d.ts"
 }
