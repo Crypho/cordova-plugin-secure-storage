@@ -23,7 +23,7 @@ public class SecureStorage extends CordovaPlugin {
 
     private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-    private static final String MSG_NOT_SUPPORTED = "API 20 (Android 5.0 Lollipop) is required. This device is running API " + Build.VERSION.SDK_INT;
+    private static final String MSG_NOT_SUPPORTED = "API 21 (Android 5.0 Lollipop) is required. This device is running API " + Build.VERSION.SDK_INT;
     private static final String MSG_DEVICE_NOT_SECURE = "Device is not secure";
 
     private Hashtable<String, SharedPreferencesHandler> SERVICE_STORAGE = new Hashtable<String, SharedPreferencesHandler>();
