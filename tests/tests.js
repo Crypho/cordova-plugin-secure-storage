@@ -397,34 +397,5 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                     );
                 }, SERVICE);
         });
-
-        createActionButton('Set Shared key from App1', function() {
-            ss = new cordova.plugins.SecureStorage(function() {
-                ss.set(function(res) {
-                    alert('Shared key set: ' + res);
-                }, function(err) {
-                    alert('Error setting shared key: ' + err);
-                }, 'sharedKey', 'sharedValue');
-            }, function(err) {
-                alert('Error creating SecureStorage: ' + err);
-            }, SERVICE);
-        });
-
-        createActionButton('Get Shared key from App2', function() {
-            ss = new cordova.plugins.SecureStorage(function() {
-                ss.get(function(res) {
-                    alert('Got Shared key: ' + res);
-                }, function(err) {
-                    alert('Error getting shared key: ' + err);
-                }, 'sharedKey');
-            }, function(err) {
-                alert('Error creating SecureStorage: ' + err);
-            }, SERVICE,
-            {
-                android: {
-                    packageName: "com.test.app1"
-                }
-            });
-        })
     }
 };
