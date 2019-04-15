@@ -45,11 +45,14 @@ var _executeNativeMethod = function (success, error, nativeMethodName, args) {
     cordova.exec(success, fail, 'SecureStorage', nativeMethodName, args);
 };
 
-SecureStorage = function (success, error, service) {
+SecureStorage = function (success, error, service, options) {
+    var platformId = cordova.platformId;
+    var opts = options && options[platformId] ? options[platformId] : {};
+
     this.service = service;
 
     try {
-        _executeNativeMethod(success, error, 'init', [this.service]);
+        _executeNativeMethod(success, error, 'init', [this.service, opts]);
     } catch (e) {
         error(e);
     }

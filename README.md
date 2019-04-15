@@ -214,6 +214,60 @@ var _init = function() {
 _init();
 ```
 
+##### Sharing data between 2 apps on Android.
+
+The plugin can be used to share data securely between 2 Android apps.
+
+This can be done by updating the `config.xml` for both the Android apps with below changes:
+
+1. Add `xmlns:android="http://schemas.android.com/apk/res/android"` in the initial `widget` tag.
+2. Add the below tag in `<platform name="android">`
+```xml
+<edit-config file="AndroidManifest.xml" mode="merge" target="/manifest">
+    <manifest android:sharedUserId="<your>.<secret>.<anyUserId>" />
+</edit-config>
+```
+
+This is required as both the apps should have the same `android:sharedUserId`. For e.g. `android:sharedUserId="com.example.myUser"`.
+
+Consider `App1` with `packageName` as `com.test.app1`.
+Data can be set from the `App1` using the below code.
+
+```js
+var ss = new cordova.plugins.SecureStorage(function() {
+    ss.set(function(res) {
+        console.log("Shared key set: " + res);
+    }, function(err) {
+        console.log("Error setting shared key: " + err);
+    }, "sharedKey", "sharedValue");
+}, function(err) {
+    console.log("Error creating SecureStorage: " + err);
+}, "my_shared_data");
+```
+Consider `App2` with `packageName` as `com.test.app2`.
+Data can be accessed from the `App2` using the `packageName` of `App1` as shown in below code.
+
+```js
+var ss = new cordova.plugins.SecureStorage(function() {
+    ss.get(function(res) {
+        console.log("Got Shared key: " + res);
+    }, function(err) {
+        console.log("Error getting shared key: " + err);
+    }, "sharedKey");
+}, function(err) {
+    console.log("Error creating SecureStorage: " + err);
+}, "my_shared_data",
+{
+  android: {
+      packageName: "com.test.app1"
+  }
+});
+```
+
+Please note that if the 2 apps use different `android:sharedUserId`, the `App2` will fail with an error `Error: Key [sharedKey] not found`.
+
+If `App1` is uninstalled and `App2` tries to access the `sharedKey` from `App1`, `App2` will fail with an error `Error: Application package com.test.app1 not found`.
+
 ##### Android keystore deletion on security setting change
 
 Changing the lock screen type on Android erases the keystore (issues [61989](https://code.google.com/p/android/issues/detail?id=61989) and [210402](https://code.google.com/p/android/issues/detail?id=210402)). This is also described in the [Android Security: The Forgetful Keystore](https://doridori.github.io/android-security-the-forgetful-keystore/) blog post.
@@ -252,7 +306,7 @@ The browser platform is supported as a mock only. Key/values are stored unencryp
 4. Add the `cordova-plugin-test-framework` plugin:
 
 ```
-cordova plugin add http://git-wip-us.apache.org/repos/asf/cordova-plugin-test-framework.git
+cordova plugin add cordova-plugin-test-framework
 ```
 
 5. Finally add the secure storage plugin as well as the tests from its location
