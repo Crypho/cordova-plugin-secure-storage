@@ -1,3 +1,8 @@
+# Project no longer mantained.
+
+As Crypho does not use Cordova for a long time now, it has become clear that we cannot keep maintaining this project any longer, or give it the attention it deserves.
+A big thanks to all the contributors.
+
 # SecureStorage plugin for Apache Cordova
 
 [![NPM](https://nodei.co/npm/cordova-plugin-secure-storage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-secure-storage/)
@@ -222,6 +227,7 @@ This can be done by updating the `config.xml` for both the Android apps with bel
 
 1. Add `xmlns:android="http://schemas.android.com/apk/res/android"` in the initial `widget` tag.
 2. Add the below tag in `<platform name="android">`
+
 ```xml
 <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest">
     <manifest android:sharedUserId="<your>.<secret>.<anyUserId>" />
@@ -234,34 +240,52 @@ Consider `App1` with `packageName` as `com.test.app1`.
 Data can be set from the `App1` using the below code.
 
 ```js
-var ss = new cordova.plugins.SecureStorage(function() {
-    ss.set(function(res) {
+var ss = new cordova.plugins.SecureStorage(
+  function() {
+    ss.set(
+      function(res) {
         console.log("Shared key set: " + res);
-    }, function(err) {
+      },
+      function(err) {
         console.log("Error setting shared key: " + err);
-    }, "sharedKey", "sharedValue");
-}, function(err) {
+      },
+      "sharedKey",
+      "sharedValue"
+    );
+  },
+  function(err) {
     console.log("Error creating SecureStorage: " + err);
-}, "my_shared_data");
+  },
+  "my_shared_data"
+);
 ```
+
 Consider `App2` with `packageName` as `com.test.app2`.
 Data can be accessed from the `App2` using the `packageName` of `App1` as shown in below code.
 
 ```js
-var ss = new cordova.plugins.SecureStorage(function() {
-    ss.get(function(res) {
+var ss = new cordova.plugins.SecureStorage(
+  function() {
+    ss.get(
+      function(res) {
         console.log("Got Shared key: " + res);
-    }, function(err) {
+      },
+      function(err) {
         console.log("Error getting shared key: " + err);
-    }, "sharedKey");
-}, function(err) {
+      },
+      "sharedKey"
+    );
+  },
+  function(err) {
     console.log("Error creating SecureStorage: " + err);
-}, "my_shared_data",
-{
-  android: {
+  },
+  "my_shared_data",
+  {
+    android: {
       packageName: "com.test.app1"
+    }
   }
-});
+);
 ```
 
 Please note that if the 2 apps use different `android:sharedUserId`, the `App2` will fail with an error `Error: Key [sharedKey] not found`.
