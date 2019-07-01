@@ -1,6 +1,7 @@
 package com.crypho.plugins;
 
 import android.content.Context;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 
 import android.security.KeyPairGeneratorSpec;
@@ -13,6 +14,8 @@ import java.util.Calendar;
 
 import javax.crypto.Cipher;
 import javax.security.auth.x500.X500Principal;
+
+import static org.apache.cordova.CordovaActivity.TAG;
 
 public class RSA {
     private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
@@ -39,9 +42,9 @@ public class RSA {
             .setEndDate(notAfter.getTime())
             .setEncryptionRequired()
             .setKeySize(2048)
-            .setKeyType("RSA")
+            .setKeyType(KeyProperties.KEY_ALGORITHM_RSA)
             .build();
-        KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance("RSA", KEYSTORE_PROVIDER);
+        KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, KEYSTORE_PROVIDER);
         kpGenerator.initialize(spec);
         kpGenerator.generateKeyPair();
     }
@@ -50,6 +53,7 @@ public class RSA {
         try {
             return loadKey(Cipher.ENCRYPT_MODE, alias) != null;
         } catch (Exception e) {
+            Log.w(TAG, "isEntryAvailable: " + alias, e );
             return false;
         }
     }

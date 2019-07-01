@@ -16,7 +16,6 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import javax.crypto.Cipher;
 
 public class SecureStorage extends CordovaPlugin {
     private static final String TAG = "SecureStorage";
@@ -98,7 +97,7 @@ public class SecureStorage extends CordovaPlugin {
 
             SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias, ctx);
             SERVICE_STORAGE.put(service, PREFS);
-
+            Log.i(TAG,"***************** Initializing Plugin *************************");
             if (!isDeviceSecure()) {
                 Log.e(TAG, MSG_DEVICE_NOT_SECURE);
                 callbackContext.error(MSG_DEVICE_NOT_SECURE);
