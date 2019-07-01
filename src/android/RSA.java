@@ -24,6 +24,8 @@ import java.util.Calendar;
 import javax.crypto.Cipher;
 import javax.security.auth.x500.X500Principal;
 
+import static org.apache.cordova.CordovaActivity.TAG;
+
 public class RSA {
     private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
     private static final Cipher CIPHER = getCipher();
