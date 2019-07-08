@@ -1,8 +1,3 @@
-# Project no longer mantained.
-
-As Crypho does not use Cordova for a long time now, it has become clear that we cannot keep maintaining this project any longer, or give it the attention it deserves.
-A big thanks to all the contributors.
-
 # SecureStorage plugin for Apache Cordova
 
 [![NPM](https://nodei.co/npm/cordova-plugin-secure-storage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-secure-storage/)
