@@ -1,7 +1,5 @@
 # SecureStorage plugin for Apache Cordova
 
-[![NPM](https://nodei.co/npm/cordova-plugin-secure-storage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-secure-storage/)
-
 ## Introduction
 
 This plugin is for use with [Apache Cordova](http://cordova.apache.org/) and allows your application to securely store secrets
@@ -177,6 +175,29 @@ The inverse process is followed on `get`.
 Native AES is used.
 Minimum android supported version is 5.0 Lollipop. If you need to support earlier Android versions use version 2.6.8.
 
+##### Android Init Options.
+- `packageName` - See [Sharing data between 2 apps on Android](#sharing-data-android)
+- `userAuthenticationValidityDuration` - Sets the duration of time (seconds) for which the Private Encryption Key is authorized to be used after the user is successfully authenticated. [KeyGenParameterSpec.Builder#setUserAuthenticationValidityDurationSeconds(int)](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder.html#setUserAuthenticationValidityDurationSeconds(int))
+- `unlockCredentialsTitle` - Custom title for Confirm Credentials screen. See [KeyguardManager#createConfirmDeviceCredentialIntent(title, description)](https://developer.android.com/reference/android/app/KeyguardManager.html#createConfirmDeviceCredentialIntent(java.lang.CharSequence,%20java.lang.CharSequence))
+- `unlockCredentialsDescription` - Custom description for Confirm Credentials screen.
+
+```js
+var ss = new cordova.plugins.SecureStorage(
+  function() {
+    console.log("Success");
+  },
+  function(error) {
+    console.log("Error " + error);
+  },
+  "my_app",
+  {
+    android: {
+      packageName: "com.test.app1"
+    }
+  }
+);
+```
+
 ##### Users must have a secure screen-lock set.
 
 The plugin will only work correctly if the user has sufficiently secure settings on the lock screen. If not, the plugin will fail to initialize and the failure callback will be called on `init()`. This is because in order to use the Android Credential Storage and create RSA keys the device needs to be somewhat secure.
@@ -214,7 +235,7 @@ var _init = function() {
 _init();
 ```
 
-##### Sharing data between 2 apps on Android.
+##### <a name="sharing-data-android"></a> Sharing data between 2 apps on Android.
 
 The plugin can be used to share data securely between 2 Android apps.
 
